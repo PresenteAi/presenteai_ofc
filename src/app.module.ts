@@ -17,11 +17,12 @@ import { NotificationsModule } from './notifications/notifications.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'familia100',
-      database: 'presenteai',
+      host: process.env.MYSQL_HOST,
+      port: parseInt(process.env.MYSQL_PORT ?? '3306', 10),
+      username: process.env.MYSQL_USER,
+      // password: process.env.MYSQL_PASSWORD,
+      password: "familia100",
+      database: process.env.MYSQL_DATABASE,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false, 
     }),
