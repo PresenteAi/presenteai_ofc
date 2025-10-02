@@ -18,7 +18,9 @@ import { NotificationsModule } from './notifications/notifications.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.MYSQL_HOST,
+      //host: process.env.MYSQL_HOST,
+
+      host: "172.17.80.1",
       port: parseInt(process.env.MYSQL_PORT ?? '3306', 10),
       username: process.env.MYSQL_USER,
       // password: process.env.MYSQL_PASSWORD,

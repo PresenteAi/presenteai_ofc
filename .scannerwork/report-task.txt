@@ -1,6 +1,6 @@
-projectKey=presenteai_ofc
+projectKey=PresenteAi-Oficial
 serverUrl=http://localhost:9000
 serverVersion=25.9.0.112764
-dashboardUrl=http://localhost:9000/dashboard?id=presenteai_ofc
-ceTaskId=7df7257a-8d78-4eb8-9f82-d1e588a6328b
-ceTaskUrl=http://localhost:9000/api/ce/task?id=7df7257a-8d78-4eb8-9f82-d1e588a6328b
+dashboardUrl=http://localhost:9000/dashboard?id=PresenteAi-Oficial
+ceTaskId=f87c41b2-9b44-49f7-b518-3b51b3de1b36
+ceTaskUrl=http://localhost:9000/api/ce/task?id=f87c41b2-9b44-49f7-b518-3b51b3de1b36
