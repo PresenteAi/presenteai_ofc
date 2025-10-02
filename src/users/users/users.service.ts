@@ -1109,5 +1109,70 @@ export class UsersService {
             email: result.email,
             createdAt: result.createdAt,
         };
+    }async findById(id: string): Promise<UserOutputDto> {
+        const result = await this.repository.findById(id);
+
+        if (!result) {
+             throw new NotFoundException(`User with id ${id} not found`);
+        }
+
+        return {
+            id: result.id,
+            name: result.name,
+            email: result.email,
+            createdAt: result.createdAt,
+        };
+    }async findById(id: string): Promise<UserOutputDto> {
+        const result = await this.repository.findById(id);
+
+        if (!result) {
+             throw new NotFoundException(`User with id ${id} not found`);
+        }
+
+        return {
+            id: result.id,
+            name: result.name,
+            email: result.email,
+            createdAt: result.createdAt,
+        };
+    }async findById(id: string): Promise<UserOutputDto> {
+        const result = await this.repository.findById(id);
+
+        if (!result) {
+             throw new NotFoundException(`User with id ${id} not found`);
+        }
+
+        return {
+            id: result.id,
+            name: result.name,
+            email: result.email,
+            createdAt: result.createdAt,
+        };
+    }async findById(id: string): Promise<UserOutputDto> {
+        const result = await this.repository.findById(id);
+
+        if (!result) {
+             throw new NotFoundException(`User with id ${id} not found`);
+        }
+
+        return {
+            id: result.id,
+            name: result.name,
+            email: result.email,
+            createdAt: result.createdAt,
+        };
+    }async findById(id: string): Promise<UserOutputDto> {
+        const result = await this.repository.findById(id);
+
+        if (!result) {
+             throw new NotFoundException(`User with id ${id} not found`);
+        }
+
+        return {
+            id: result.id,
+            name: result.name,
+            email: result.email,
+            createdAt: result.createdAt,
+        };
     }
 }
