@@ -1,2 +1,33 @@
+import { EventsRepository } from './events.repository';
+import { CreateEventDto } from './dto/create-event.dto';
+import { UpdateEventDto } from './dto/update-event.dto';
+import { EventPaginationDto } from './dto/event-pagination.dto';
+import { PaginatedEventsDto } from './dto/paginated-events.dto';
+import { EventOutputDto } from './dto/event-output.dto';
 export declare class EventsService {
+    private readonly repository;
+    private readonly URL_REGEX;
+    private readonly COLOR_REGEX;
+    private readonly DATE_REGEX;
+    private readonly URL_HTTP_REGEX;
+    constructor(repository: EventsRepository);
+    create(dto: CreateEventDto): Promise<EventOutputDto>;
+    findAll(paginationDto: EventPaginationDto): Promise<PaginatedEventsDto>;
+    findById(id: string): Promise<EventOutputDto>;
+    findByPublicUrl(publicUrl: string): Promise<EventOutputDto | null>;
+    findByUserId(userId: string): Promise<EventOutputDto[]>;
+    findByUserId(userId: string, paginationDto: EventPaginationDto): Promise<PaginatedEventsDto>;
+    update(id: string, updateDto: UpdateEventDto, userId?: string): Promise<EventOutputDto>;
+    remove(id: string, userId?: string): Promise<void>;
+    togglePublish(id: string, isPublished: boolean, userId?: string): Promise<EventOutputDto>;
+    countActiveEvents(): Promise<number>;
+    countByUserId(userId: string): Promise<number>;
+    findUpcomingEvents(days?: number): Promise<EventOutputDto[]>;
+    private validateCreateEventDto;
+    private validateUpdateEventDto;
+    private validateColor;
+    private validateDate;
+    private sanitizePaginationDto;
+    private generateSlug;
+    private mapToOutputDto;
 }

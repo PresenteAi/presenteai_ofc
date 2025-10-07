@@ -13,6 +13,7 @@ import {
   ParseUUIDPipe,
   ValidationPipe
 } from '@nestjs/common';
+import { Public } from '../../auth/decorators/public.decorator';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -38,6 +39,7 @@ export class UsersController {
   /**
    * Criar um novo usuário
    */
+  @Public()
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ 
