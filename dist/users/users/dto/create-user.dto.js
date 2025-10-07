@@ -15,18 +15,38 @@ class CreateUserDto {
     name;
     email;
     password;
+    indicatedById;
 }
 exports.CreateUserDto = CreateUserDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'João Silva' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'João Silva',
+        description: 'Full name of the user (2-300 characters)',
+        minLength: 2,
+        maxLength: 300
+    }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'joao@email.com' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'joao@email.com',
+        description: 'Valid email address (max 150 characters)'
+    }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "email", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Senha123!' }),
+    (0, swagger_1.ApiProperty)({
+        example: 'MinhaSenh@123',
+        description: 'Password (8-255 characters) - must contain at least one uppercase, one lowercase, one number and one special character'
+    }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "password", void 0);
-//# sourceMappingURL=create-user.input.dto.js.map
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: 'ID of the user who indicated this user (optional)',
+        required: false
+    }),
+    __metadata("design:type", Number)
+], CreateUserDto.prototype, "indicatedById", void 0);
+//# sourceMappingURL=create-user.dto.js.map

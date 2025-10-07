@@ -17,6 +17,11 @@ let User = class User {
     name;
     email;
     passwordHash;
+    isActive;
+    isIndicated;
+    indicatedById;
+    lastLoginAt;
+    updatedAt;
     createdAt;
 };
 exports.User = User;
@@ -40,6 +45,31 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 255 }),
     __metadata("design:type", String)
 ], User.prototype, "passwordHash", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Indicates if the user is active' }),
+    (0, typeorm_1.Column)({ type: 'boolean', default: true }),
+    __metadata("design:type", Boolean)
+], User.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Indicates if the user is a indicate user' }),
+    (0, typeorm_1.Column)({ type: 'boolean', default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "isIndicated", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'User Id who indicated this user' }),
+    (0, typeorm_1.Column)({ type: 'int', nullable: true }),
+    __metadata("design:type", Number)
+], User.prototype, "indicatedById", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2025-09-29T12:00:00Z', description: 'Last login date' }),
+    (0, typeorm_1.Column)({ type: 'timestamp', name: 'last_login_at', nullable: true }),
+    __metadata("design:type", Date)
+], User.prototype, "lastLoginAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2025-09-29T12:00:00Z', description: 'Last update date' }),
+    (0, typeorm_1.Column)({ type: 'timestamp', name: 'updated_at', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' }),
+    __metadata("design:type", Date)
+], User.prototype, "updatedAt", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: '2025-09-29T12:00:00Z', description: 'Creation date' }),
     (0, typeorm_1.CreateDateColumn)({ type: 'timestamp', name: 'created_at' }),

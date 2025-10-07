@@ -3,5 +3,10 @@ export declare class User {
     name: string;
     email: string;
     passwordHash: string;
+    isActive: boolean;
+    isIndicated: boolean;
+    indicatedById: number;
+    lastLoginAt: Date;
+    updatedAt: Date;
     createdAt: Date;
 }

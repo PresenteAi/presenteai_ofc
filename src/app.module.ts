@@ -18,16 +18,15 @@ import { NotificationsModule } from './notifications/notifications.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      //host: process.env.MYSQL_HOST,
-
-      host: "172.17.80.1",
+      // host: process.env.MYSQL_HOST,
+      host: '172.17.80.1',
       port: parseInt(process.env.MYSQL_PORT ?? '3306', 10),
-      username: process.env.MYSQL_USER,
-      // password: process.env.MYSQL_PASSWORD,
-      password: "familia100",
-      database: process.env.MYSQL_DATABASE,
+      username: 'root',
+      password: 'familia100',
+      database: 'presenteai',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: false, 
+      synchronize: true, // ⚠️ CUIDADO: Use apenas em desenvolvimento!
+      logging: true, // Para ver as queries SQL sendo executadas
     }),
     AuthModule,
     UsersModule,
