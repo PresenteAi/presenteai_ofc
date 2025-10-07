@@ -12,8 +12,6 @@ export declare class GiftEventsService {
     findOne(id: number): Promise<GiftEventResponseDto>;
     update(id: number, updateGiftEventDto: UpdateGiftEventDto): Promise<GiftEventResponseDto>;
     remove(id: number): Promise<void>;
-    updateCollectedValue(id: number, collectedValue: number): Promise<GiftEventResponseDto>;
-    addContribution(id: number, contributionAmount: number): Promise<GiftEventResponseDto>;
     markAsCompleted(id: number): Promise<GiftEventResponseDto>;
     reopenGift(id: number): Promise<GiftEventResponseDto>;
     getEventStats(eventId: number): Promise<{

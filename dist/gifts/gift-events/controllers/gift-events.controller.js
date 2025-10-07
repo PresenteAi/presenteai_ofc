@@ -44,12 +44,6 @@ let GiftEventsController = class GiftEventsController {
     async update(id, updateGiftEventDto) {
         return await this.giftEventsService.update(id, updateGiftEventDto);
     }
-    async addContribution(id, body) {
-        return await this.giftEventsService.addContribution(id, body.amount);
-    }
-    async updateCollectedValue(id, body) {
-        return await this.giftEventsService.updateCollectedValue(id, body.collectedValue);
-    }
     async markAsCompleted(id) {
         return await this.giftEventsService.markAsCompleted(id);
     }
@@ -64,16 +58,16 @@ exports.GiftEventsController = GiftEventsController;
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({
-        summary: 'Criar um novo presente no evento',
-        description: 'Associa um template de presente (base ou personalizado) a um evento específico'
+        summary: 'Create a new gift event',
+        description: 'Associates a gift template (base or customized) with a specific event'
     }),
     (0, swagger_1.ApiResponse)({
         status: 201,
-        description: 'Presente criado com sucesso no evento',
+        description: 'Gift event created successfully',
         type: gift_event_response_dto_1.GiftEventResponseDto
     }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'Dados inválidos fornecidos' }),
-    (0, swagger_1.ApiResponse)({ status: 409, description: 'Template de presente já associado ao evento' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid data provided' }),
+    (0, swagger_1.ApiResponse)({ status: 409, description: 'Gift template already associated with this event' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_gift_event_dto_1.CreateGiftEventDto]),
@@ -82,12 +76,12 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({
-        summary: 'Listar presentes de eventos',
-        description: 'Lista todos os presentes associados a eventos com filtros e paginação'
+        summary: 'List gift events',
+        description: 'Lists all gift events with filters and pagination'
     }),
     (0, swagger_1.ApiResponse)({
         status: 200,
-        description: 'Lista de presentes retornada com sucesso',
+        description: 'Gift events list returned successfully',
         type: gift_event_response_dto_1.PaginatedGiftEventResponseDto
     }),
     __param(0, (0, common_1.Query)()),
@@ -98,13 +92,13 @@ __decorate([
 __decorate([
     (0, common_1.Get)('event/:eventId'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Listar presentes de um evento específico',
-        description: 'Retorna todos os presentes associados a um evento específico'
+        summary: 'List gifts for a specific event',
+        description: 'Returns all gifts associated with a specific event'
     }),
-    (0, swagger_1.ApiParam)({ name: 'eventId', description: 'ID do evento', type: 'number' }),
+    (0, swagger_1.ApiParam)({ name: 'eventId', description: 'Event ID', type: 'number' }),
     (0, swagger_1.ApiResponse)({
         status: 200,
-        description: 'Presentes do evento retornados com sucesso',
+        description: 'Event gifts returned successfully',
         type: [gift_event_response_dto_1.GiftEventResponseDto]
     }),
     __param(0, (0, common_1.Param)('eventId', common_1.ParseIntPipe)),
@@ -115,13 +109,13 @@ __decorate([
 __decorate([
     (0, common_1.Get)('event/:eventId/stats'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Estatísticas dos presentes de um evento',
-        description: 'Retorna estatísticas agregadas dos presentes de um evento'
+        summary: 'Event gift statistics',
+        description: 'Returns aggregated statistics for gifts in an event'
     }),
-    (0, swagger_1.ApiParam)({ name: 'eventId', description: 'ID do evento', type: 'number' }),
+    (0, swagger_1.ApiParam)({ name: 'eventId', description: 'Event ID', type: 'number' }),
     (0, swagger_1.ApiResponse)({
         status: 200,
-        description: 'Estatísticas retornadas com sucesso',
+        description: 'Statistics returned successfully',
         schema: {
             type: 'object',
             properties: {
@@ -142,16 +136,16 @@ __decorate([
 __decorate([
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Buscar presente por ID',
-        description: 'Retorna os detalhes de um presente específico no evento'
+        summary: 'Find gift event by ID',
+        description: 'Returns details of a specific gift event'
     }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID do presente no evento', type: 'number' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Gift event ID', type: 'number' }),
     (0, swagger_1.ApiResponse)({
         status: 200,
-        description: 'Presente encontrado com sucesso',
+        description: 'Gift event found successfully',
         type: gift_event_response_dto_1.GiftEventResponseDto
     }),
-    (0, swagger_1.ApiResponse)({ status: 404, description: 'Presente não encontrado' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Gift event not found' }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -160,64 +154,24 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, swagger_1.ApiOperation)({
-        summary: 'Atualizar presente no evento',
-        description: 'Atualiza informações de um presente específico no evento'
+        summary: 'Update gift event',
+        description: 'Updates information of a specific gift event'
     }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID do presente no evento', type: 'number' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Gift event ID', type: 'number' }),
     (0, swagger_1.ApiResponse)({
         status: 200,
-        description: 'Presente atualizado com sucesso',
+        description: 'Gift event updated successfully',
         type: gift_event_response_dto_1.GiftEventResponseDto
     }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'Dados inválidos fornecidos' }),
-    (0, swagger_1.ApiResponse)({ status: 404, description: 'Presente não encontrado' }),
-    (0, swagger_1.ApiResponse)({ status: 409, description: 'Conflito com template existente' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid data provided' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Gift event not found' }),
+    (0, swagger_1.ApiResponse)({ status: 409, description: 'Conflict with existing template' }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, update_gift_event_dto_1.UpdateGiftEventDto]),
     __metadata("design:returntype", Promise)
 ], GiftEventsController.prototype, "update", null);
-__decorate([
-    (0, common_1.Patch)(':id/contribution'),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Adicionar contribuição ao presente',
-        description: 'Adiciona uma contribuição ao valor coletado do presente'
-    }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID do presente no evento', type: 'number' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: 'Contribuição adicionada com sucesso',
-        type: gift_event_response_dto_1.GiftEventResponseDto
-    }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'Valor de contribuição inválido' }),
-    (0, swagger_1.ApiResponse)({ status: 404, description: 'Presente não encontrado' }),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
-    __metadata("design:returntype", Promise)
-], GiftEventsController.prototype, "addContribution", null);
-__decorate([
-    (0, common_1.Patch)(':id/collected-value'),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Atualizar valor coletado',
-        description: 'Define diretamente o valor total coletado do presente'
-    }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID do presente no evento', type: 'number' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: 'Valor coletado atualizado com sucesso',
-        type: gift_event_response_dto_1.GiftEventResponseDto
-    }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'Valor inválido fornecido' }),
-    (0, swagger_1.ApiResponse)({ status: 404, description: 'Presente não encontrado' }),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
-    __metadata("design:returntype", Promise)
-], GiftEventsController.prototype, "updateCollectedValue", null);
 __decorate([
     (0, common_1.Patch)(':id/complete'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
@@ -260,12 +214,12 @@ __decorate([
     (0, common_1.Delete)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
     (0, swagger_1.ApiOperation)({
-        summary: 'Remover presente do evento',
-        description: 'Remove a associação de um presente com um evento'
+        summary: 'Remove gift event',
+        description: 'Removes the association of a gift with an event'
     }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID do presente no evento', type: 'number' }),
-    (0, swagger_1.ApiResponse)({ status: 204, description: 'Presente removido com sucesso' }),
-    (0, swagger_1.ApiResponse)({ status: 404, description: 'Presente não encontrado' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Gift event ID', type: 'number' }),
+    (0, swagger_1.ApiResponse)({ status: 204, description: 'Gift event removed successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Gift event not found' }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),

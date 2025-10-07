@@ -141,10 +141,6 @@ let GiftEventsRepository = class GiftEventsRepository {
     async remove(id) {
         await this.giftEventRepository.delete(id);
     }
-    async updateCollectedValue(id, collectedValue) {
-        await this.giftEventRepository.update(id, { collectedValue });
-        return await this.findOne(id);
-    }
     async markAsCompleted(id) {
         const giftEvent = await this.findOne(id);
         if (!giftEvent) {

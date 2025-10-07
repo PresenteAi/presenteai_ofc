@@ -13,7 +13,6 @@ export declare class GiftEventsRepository {
     findOneByEventAndTemplate(eventId: number, giftTemplateId?: number, giftTemplateChangedId?: number): Promise<GiftEvent | null>;
     update(id: number, updateGiftEventDto: UpdateGiftEventDto): Promise<GiftEvent | null>;
     remove(id: number): Promise<void>;
-    updateCollectedValue(id: number, collectedValue: number): Promise<GiftEvent | null>;
     markAsCompleted(id: number): Promise<GiftEvent | null>;
     getStatsByEvent(eventId: number): Promise<{
         totalGifts: number;

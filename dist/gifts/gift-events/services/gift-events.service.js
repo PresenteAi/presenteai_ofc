@@ -113,39 +113,6 @@ let GiftEventsService = class GiftEventsService {
         }
         await this.giftEventsRepository.remove(id);
     }
-    async updateCollectedValue(id, collectedValue) {
-        if (collectedValue < 0) {
-            throw new common_1.BadRequestException('Collected value cannot be negative');
-        }
-        const existingGiftEvent = await this.giftEventsRepository.findOne(id);
-        if (!existingGiftEvent) {
-            throw new common_1.NotFoundException(`Gift event with ID ${id} not found`);
-        }
-        if (!existingGiftEvent.canReceiveContributions()) {
-            throw new common_1.BadRequestException('This gift cannot receive contributions (it might be completed)');
-        }
-        const updatedGiftEvent = await this.giftEventsRepository.updateCollectedValue(id, collectedValue);
-        if (!updatedGiftEvent) {
-            throw new common_1.NotFoundException(`Gift event with ID ${id} not found after update`);
-        }
-        await this.checkAndMarkAsCompleted(updatedGiftEvent);
-        const refreshedGiftEvent = await this.giftEventsRepository.findOne(id);
-        return new gift_event_response_dto_1.GiftEventResponseDto(refreshedGiftEvent);
-    }
-    async addContribution(id, contributionAmount) {
-        if (contributionAmount <= 0) {
-            throw new common_1.BadRequestException('Contribution amount must be positive');
-        }
-        const existingGiftEvent = await this.giftEventsRepository.findOne(id);
-        if (!existingGiftEvent) {
-            throw new common_1.NotFoundException(`Gift event with ID ${id} not found`);
-        }
-        if (!existingGiftEvent.canReceiveContributions()) {
-            throw new common_1.BadRequestException('This gift cannot receive contributions (it might be completed)');
-        }
-        const newCollectedValue = Number(existingGiftEvent.collectedValue) + contributionAmount;
-        return await this.updateCollectedValue(id, newCollectedValue);
-    }
     async markAsCompleted(id) {
         const giftEvent = await this.giftEventsRepository.findOne(id);
         if (!giftEvent) {
