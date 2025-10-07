@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateEventDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const class_validator_1 = require("class-validator");
 const event_entity_1 = require("../entities/event.entity");
 class UpdateEventDto {
     title;
@@ -36,6 +37,10 @@ __decorate([
         maxLength: 200,
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MinLength)(3),
+    (0, class_validator_1.MaxLength)(200),
     __metadata("design:type", String)
 ], UpdateEventDto.prototype, "title", void 0);
 __decorate([
@@ -45,6 +50,9 @@ __decorate([
         required: false,
         maxLength: 2000
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(2000),
     __metadata("design:type", String)
 ], UpdateEventDto.prototype, "description", void 0);
 __decorate([
@@ -54,6 +62,8 @@ __decorate([
         enum: event_entity_1.EventType,
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(event_entity_1.EventType),
     __metadata("design:type", String)
 ], UpdateEventDto.prototype, "eventType", void 0);
 __decorate([
@@ -62,6 +72,8 @@ __decorate([
         description: 'Cover image URL (must be valid URL)',
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsUrl)(),
     __metadata("design:type", String)
 ], UpdateEventDto.prototype, "coverImageUrl", void 0);
 __decorate([
@@ -70,6 +82,9 @@ __decorate([
         description: 'Primary theme color (hex format)',
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Matches)(/^#[0-9A-Fa-f]{6}$/, { message: 'Primary color must be a valid hex color' }),
     __metadata("design:type", String)
 ], UpdateEventDto.prototype, "primaryColor", void 0);
 __decorate([
@@ -78,6 +93,9 @@ __decorate([
         description: 'Secondary theme color (hex format)',
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Matches)(/^#[0-9A-Fa-f]{6}$/, { message: 'Secondary color must be a valid hex color' }),
     __metadata("design:type", String)
 ], UpdateEventDto.prototype, "secondaryColor", void 0);
 __decorate([
@@ -86,6 +104,9 @@ __decorate([
         description: 'Tertiary theme color (hex format)',
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Matches)(/^#[0-9A-Fa-f]{6}$/, { message: 'Tertiary color must be a valid hex color' }),
     __metadata("design:type", String)
 ], UpdateEventDto.prototype, "tertiaryColor", void 0);
 __decorate([
@@ -94,6 +115,9 @@ __decorate([
         description: 'Font family name (max 100 characters)',
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(100),
     __metadata("design:type", String)
 ], UpdateEventDto.prototype, "fontFamily", void 0);
 __decorate([
@@ -102,6 +126,8 @@ __decorate([
         description: 'Event start date (YYYY-MM-DD format)',
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsDateString)(),
     __metadata("design:type", String)
 ], UpdateEventDto.prototype, "startDate", void 0);
 __decorate([
@@ -110,6 +136,8 @@ __decorate([
         description: 'Contribution end date (YYYY-MM-DD format)',
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsDateString)(),
     __metadata("design:type", String)
 ], UpdateEventDto.prototype, "endDate", void 0);
 __decorate([
@@ -120,6 +148,11 @@ __decorate([
         maxLength: 100,
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MinLength)(3),
+    (0, class_validator_1.MaxLength)(100),
+    (0, class_validator_1.Matches)(/^[a-z0-9-]+$/, { message: 'Public URL must contain only lowercase letters, numbers, and hyphens' }),
     __metadata("design:type", String)
 ], UpdateEventDto.prototype, "publicUrl", void 0);
 __decorate([
@@ -128,6 +161,8 @@ __decorate([
         description: 'Whether the event is published',
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], UpdateEventDto.prototype, "isPublished", void 0);
 __decorate([
@@ -136,6 +171,8 @@ __decorate([
         description: 'Whether the event is active',
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], UpdateEventDto.prototype, "isActive", void 0);
 //# sourceMappingURL=update-event.dto.js.map

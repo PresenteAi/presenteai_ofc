@@ -18,13 +18,27 @@ const swagger_1 = require("@nestjs/swagger");
 const auth_service_1 = require("./auth.service");
 const login_dto_1 = require("./dto/login.dto");
 const public_decorator_1 = require("../decorators/public.decorator");
+const current_user_decorator_1 = require("../decorators/current-user.decorator");
 let AuthController = class AuthController {
     authService;
     constructor(authService) {
         this.authService = authService;
     }
-    async login(loginDto) {
-        return this.authService.login(loginDto);
+    async login(dto) {
+        return this.authService.login(dto);
+    }
+    async getMe(userId, user) {
+        return {
+            success: true,
+            userId: userId,
+            userIdType: typeof userId,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            },
+            message: 'Authentication working correctly!'
+        };
     }
 };
 exports.AuthController = AuthController;
@@ -47,11 +61,31 @@ __decorate([
     (0, swagger_1.ApiUnauthorizedResponse)({
         description: 'Invalid credentials'
     }),
-    __param(0, (0, common_1.Body)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [login_dto_1.LoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Get)('me'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get current user info',
+        description: 'Returns the authenticated user information'
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'User information retrieved successfully'
+    }),
+    (0, swagger_1.ApiUnauthorizedResponse)({
+        description: 'Invalid or missing JWT token'
+    }),
+    __param(0, (0, current_user_decorator_1.UserId)()),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "getMe", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('auth'),
     (0, common_1.Controller)('auth'),

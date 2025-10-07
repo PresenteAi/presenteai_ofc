@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsInt, Min, Max, IsString, IsIn, IsEnum, IsBoolean, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
 import { EventType } from '../entities/event.entity';
 
 export class EventPaginationDto {
@@ -9,6 +11,10 @@ export class EventPaginationDto {
     default: 1,
     required: false
   })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
   page?: number = 1;
 
   @ApiProperty({ 
@@ -19,6 +25,11 @@ export class EventPaginationDto {
     default: 10,
     required: false
   })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
   limit?: number = 10;
 
   @ApiProperty({ 
@@ -27,6 +38,9 @@ export class EventPaginationDto {
     enum: ['title', 'eventType', 'startDate', 'createdAt', 'updatedAt'],
     required: false
   })
+  @IsOptional()
+  @IsString()
+  @IsIn(['title', 'eventType', 'startDate', 'createdAt', 'updatedAt'])
   sortBy?: string = 'createdAt';
 
   @ApiProperty({ 
@@ -35,6 +49,8 @@ export class EventPaginationDto {
     enum: ['ASC', 'DESC'],
     required: false
   })
+  @IsOptional()
+  @IsIn(['ASC', 'DESC'])
   sortOrder?: 'ASC' | 'DESC' = 'DESC';
 
   @ApiProperty({ 
@@ -42,6 +58,8 @@ export class EventPaginationDto {
     description: 'Search term for title or description',
     required: false
   })
+  @IsOptional()
+  @IsString()
   search?: string;
 
   @ApiProperty({ 
@@ -50,20 +68,28 @@ export class EventPaginationDto {
     enum: EventType,
     required: false
   })
+  @IsOptional()
+  @IsEnum(EventType)
   eventType?: EventType;
 
   @ApiProperty({ 
-    example: 'uuid-string',
+    example: 1,
     description: 'Filter by user/organizer ID',
     required: false
   })
-  userId?: string;
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  userId?: number;
 
   @ApiProperty({ 
     example: true,
     description: 'Filter by published status',
     required: false
   })
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
   isPublished?: boolean;
 
   @ApiProperty({ 
@@ -71,5 +97,8 @@ export class EventPaginationDto {
     description: 'Filter by active status',
     required: false
   })
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
   isActive?: boolean;
 }

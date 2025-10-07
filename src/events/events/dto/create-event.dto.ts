@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsOptional, IsEnum, IsUrl, IsBoolean, IsDateString, IsNumber, MinLength, MaxLength, Matches } from 'class-validator';
 import { EventType } from '../entities/event.entity';
 
 export class CreateEventDto {
   @ApiProperty({ 
-    example: 'uuid-string',
+    example: 1,
     description: 'Reference to the event organizer (User ID)'
   })
-  userId: string;
+  @IsNumber()
+  userId: number;
 
   @ApiProperty({ 
     example: 'Casamento Ana & João',
@@ -14,6 +16,9 @@ export class CreateEventDto {
     minLength: 3,
     maxLength: 200
   })
+  @IsString()
+  @MinLength(3)
+  @MaxLength(200)
   title: string;
 
   @ApiProperty({ 
@@ -22,6 +27,9 @@ export class CreateEventDto {
     required: false,
     maxLength: 2000
   })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
   description?: string;
 
   @ApiProperty({ 
@@ -29,6 +37,7 @@ export class CreateEventDto {
     description: 'Type of event',
     enum: EventType
   })
+  @IsEnum(EventType)
   eventType: EventType;
 
   @ApiProperty({ 
@@ -36,6 +45,8 @@ export class CreateEventDto {
     description: 'Cover image URL (must be valid URL)',
     required: false
   })
+  @IsOptional()
+  @IsUrl()
   coverImageUrl?: string;
 
   @ApiProperty({ 
@@ -43,6 +54,9 @@ export class CreateEventDto {
     description: 'Primary theme color (hex format)',
     required: false
   })
+  @IsOptional()
+  @IsString()
+  @Matches(/^#[0-9A-Fa-f]{6}$/, { message: 'Primary color must be a valid hex color' })
   primaryColor?: string;
 
   @ApiProperty({ 
@@ -50,6 +64,9 @@ export class CreateEventDto {
     description: 'Secondary theme color (hex format)',
     required: false
   })
+  @IsOptional()
+  @IsString()
+  @Matches(/^#[0-9A-Fa-f]{6}$/, { message: 'Secondary color must be a valid hex color' })
   secondaryColor?: string;
 
   @ApiProperty({ 
@@ -57,6 +74,9 @@ export class CreateEventDto {
     description: 'Tertiary theme color (hex format)',
     required: false
   })
+  @IsOptional()
+  @IsString()
+  @Matches(/^#[0-9A-Fa-f]{6}$/, { message: 'Tertiary color must be a valid hex color' })
   tertiaryColor?: string;
 
   @ApiProperty({ 
@@ -64,6 +84,9 @@ export class CreateEventDto {
     description: 'Font family name (max 100 characters)',
     required: false
   })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
   fontFamily?: string;
 
   @ApiProperty({ 
@@ -71,6 +94,8 @@ export class CreateEventDto {
     description: 'Event start date (YYYY-MM-DD format)',
     required: false
   })
+  @IsOptional()
+  @IsDateString()
   startDate?: string;
 
   @ApiProperty({ 
@@ -78,6 +103,8 @@ export class CreateEventDto {
     description: 'Contribution end date (YYYY-MM-DD format)',
     required: false
   })
+  @IsOptional()
+  @IsDateString()
   endDate?: string;
 
   @ApiProperty({ 
@@ -86,6 +113,10 @@ export class CreateEventDto {
     minLength: 3,
     maxLength: 100
   })
+  @IsString()
+  @MinLength(3)
+  @MaxLength(100)
+  @Matches(/^[a-z0-9-]+$/, { message: 'Public URL must contain only lowercase letters, numbers, and hyphens' })
   publicUrl: string;
 
   @ApiProperty({ 
@@ -94,5 +125,7 @@ export class CreateEventDto {
     required: false,
     default: false
   })
+  @IsOptional()
+  @IsBoolean()
   isPublished?: boolean;
 }

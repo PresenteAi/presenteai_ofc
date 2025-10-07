@@ -10,8 +10,8 @@ describe('EventsRepository', () => {
   let mockRepository: Partial<Repository<Event>>;
 
   const mockEvent = {
-    id: '123e4567-e89b-12d3-a456-426614174000',
-    userId: '123e4567-e89b-12d3-a456-426614174001',
+    id: 1,
+    userId: 1,
     title: 'Test Event',
     description: 'Test Description',
     eventType: EventType.WEDDING,
@@ -28,9 +28,16 @@ describe('EventsRepository', () => {
     createdAt: new Date(),
     updatedAt: new Date(),
     user: {
-      id: '123e4567-e89b-12d3-a456-426614174001',
+      id: 1,
       name: 'Test User',
-      email: 'test@example.com'
+      email: 'test@example.com',
+      passwordHash: 'hash',
+      isActive: true,
+      isIndicated: false,
+      indicatedById: 1,
+      lastLoginAt: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
   } as Event;
 
@@ -63,7 +70,7 @@ describe('EventsRepository', () => {
       mockRepository.findOne = jest.fn().mockResolvedValue(null);
 
       const result = await repository.create({
-        userId: 'user-uuid',
+        userId: 1,
         title: 'Test Event',
         eventType: EventType.WEDDING,
         publicUrl: 'test-event',
@@ -79,7 +86,7 @@ describe('EventsRepository', () => {
 
       await expect(
         repository.create({
-          userId: 'user-uuid',
+          userId: 1,
           title: 'Test Event',
           eventType: EventType.WEDDING,
           publicUrl: 'test-event',
@@ -92,7 +99,7 @@ describe('EventsRepository', () => {
     it('should return event when found', async () => {
       mockRepository.findOne = jest.fn().mockResolvedValue(mockEvent);
 
-      const result = await repository.findById('123e4567-e89b-12d3-a456-426614174000');
+      const result = await repository.findById(1);
 
       expect(result).toEqual(mockEvent);
     });
@@ -101,12 +108,12 @@ describe('EventsRepository', () => {
       mockRepository.findOne = jest.fn().mockResolvedValue(null);
 
       await expect(
-        repository.findById('123e4567-e89b-12d3-a456-426614174000')
+        repository.findById(999)
       ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw BadRequestException for invalid ID', async () => {
-      await expect(repository.findById('')).rejects.toThrow(BadRequestException);
+      await expect(repository.findById(0)).rejects.toThrow(BadRequestException);
       await expect(repository.findById(null as any)).rejects.toThrow(BadRequestException);
     });
   });
@@ -133,10 +140,10 @@ describe('EventsRepository', () => {
     it('should deactivate event successfully', async () => {
       mockRepository.findOne = jest.fn().mockResolvedValue(mockEvent);
 
-      await repository.softDelete('123e4567-e89b-12d3-a456-426614174000');
+      await repository.softDelete(1);
 
       expect(mockRepository.update).toHaveBeenCalledWith(
-        '123e4567-e89b-12d3-a456-426614174000',
+        1,
         expect.objectContaining({
           isActive: false,
         })
@@ -148,10 +155,10 @@ describe('EventsRepository', () => {
     it('should toggle publish status successfully', async () => {
       mockRepository.findOne = jest.fn().mockResolvedValue(mockEvent);
 
-      await repository.togglePublish('123e4567-e89b-12d3-a456-426614174000', false);
+      await repository.togglePublish(1, false);
 
       expect(mockRepository.update).toHaveBeenCalledWith(
-        '123e4567-e89b-12d3-a456-426614174000',
+        1,
         expect.objectContaining({
           isPublished: false,
         })

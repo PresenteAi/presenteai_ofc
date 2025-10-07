@@ -17,7 +17,15 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+        "test:gifts": "jest --testPathPatterns=\"src/gifts\" --verbose",
+    "test:gifts:watch": "jest --testPathPatterns=\"src/gifts\" --watch --verbose",
+    "test:gifts:cov": "jest --testPathPatterns=\"src/gifts\" --coverage --verbose",
+    "test:gifts:unit": "jest --testPathPatterns=\"src/gifts\" --ignore-pattern=\"e2e.spec.ts\" --verbose",
+    "test:gifts:fast": "SKIP_E2E=true jest --testPathPatterns=\"src/gifts\" --testTimeout=10000 --verbose",
+    "test:dto": "jest --testPathPatterns=\"dto\" --verbose",
+    "test:controllers": "jest --testPathPatterns=\"controller\" --verbose",
+    "test:services": "jest --testPathPatterns=\"service\" --verbose"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

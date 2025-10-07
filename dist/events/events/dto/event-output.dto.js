@@ -35,17 +35,17 @@ class EventOutputDto {
 exports.EventOutputDto = EventOutputDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
-        example: 'uuid-string',
+        example: 1,
         description: 'Unique identifier of the event'
     }),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], EventOutputDto.prototype, "id", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        example: 'uuid-string',
+        example: 1,
         description: 'Reference to the event organizer'
     }),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], EventOutputDto.prototype, "userId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({

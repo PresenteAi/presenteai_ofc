@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsOptional, IsEnum, IsUrl, IsBoolean, IsDateString, MinLength, MaxLength, Matches } from 'class-validator';
 import { EventType } from '../entities/event.entity';
 
 export class UpdateEventDto {
@@ -9,6 +10,10 @@ export class UpdateEventDto {
     maxLength: 200,
     required: false
   })
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
+  @MaxLength(200)
   title?: string;
 
   @ApiProperty({ 
@@ -17,6 +22,9 @@ export class UpdateEventDto {
     required: false,
     maxLength: 2000
   })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
   description?: string;
 
   @ApiProperty({ 
@@ -25,6 +33,8 @@ export class UpdateEventDto {
     enum: EventType,
     required: false
   })
+  @IsOptional()
+  @IsEnum(EventType)
   eventType?: EventType;
 
   @ApiProperty({ 
@@ -32,6 +42,8 @@ export class UpdateEventDto {
     description: 'Cover image URL (must be valid URL)',
     required: false
   })
+  @IsOptional()
+  @IsUrl()
   coverImageUrl?: string;
 
   @ApiProperty({ 
@@ -39,6 +51,9 @@ export class UpdateEventDto {
     description: 'Primary theme color (hex format)',
     required: false
   })
+  @IsOptional()
+  @IsString()
+  @Matches(/^#[0-9A-Fa-f]{6}$/, { message: 'Primary color must be a valid hex color' })
   primaryColor?: string;
 
   @ApiProperty({ 
@@ -46,6 +61,9 @@ export class UpdateEventDto {
     description: 'Secondary theme color (hex format)',
     required: false
   })
+  @IsOptional()
+  @IsString()
+  @Matches(/^#[0-9A-Fa-f]{6}$/, { message: 'Secondary color must be a valid hex color' })
   secondaryColor?: string;
 
   @ApiProperty({ 
@@ -53,6 +71,9 @@ export class UpdateEventDto {
     description: 'Tertiary theme color (hex format)',
     required: false
   })
+  @IsOptional()
+  @IsString()
+  @Matches(/^#[0-9A-Fa-f]{6}$/, { message: 'Tertiary color must be a valid hex color' })
   tertiaryColor?: string;
 
   @ApiProperty({ 
@@ -60,6 +81,9 @@ export class UpdateEventDto {
     description: 'Font family name (max 100 characters)',
     required: false
   })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
   fontFamily?: string;
 
   @ApiProperty({ 
@@ -67,6 +91,8 @@ export class UpdateEventDto {
     description: 'Event start date (YYYY-MM-DD format)',
     required: false
   })
+  @IsOptional()
+  @IsDateString()
   startDate?: string;
 
   @ApiProperty({ 
@@ -74,6 +100,8 @@ export class UpdateEventDto {
     description: 'Contribution end date (YYYY-MM-DD format)',
     required: false
   })
+  @IsOptional()
+  @IsDateString()
   endDate?: string;
 
   @ApiProperty({ 
@@ -83,6 +111,11 @@ export class UpdateEventDto {
     maxLength: 100,
     required: false
   })
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
+  @MaxLength(100)
+  @Matches(/^[a-z0-9-]+$/, { message: 'Public URL must contain only lowercase letters, numbers, and hyphens' })
   publicUrl?: string;
 
   @ApiProperty({ 
@@ -90,6 +123,8 @@ export class UpdateEventDto {
     description: 'Whether the event is published',
     required: false
   })
+  @IsOptional()
+  @IsBoolean()
   isPublished?: boolean;
 
   @ApiProperty({ 
@@ -97,5 +132,7 @@ export class UpdateEventDto {
     description: 'Whether the event is active',
     required: false
   })
+  @IsOptional()
+  @IsBoolean()
   isActive?: boolean;
 }

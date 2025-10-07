@@ -1,5 +1,5 @@
 export declare class UserOutputDto {
-    id: string;
+    id: number;
     name: string;
     email: string;
     isActive: boolean;

@@ -20,6 +20,7 @@ const contributions_module_1 = require("./contributions/contributions.module");
 const payments_module_1 = require("./payments/payments.module");
 const invites_module_1 = require("./invites/invites.module");
 const notifications_module_1 = require("./notifications/notifications.module");
+const debug_module_1 = require("./debug/debug.module");
 const jwt_auth_guard_1 = require("./auth/guards/jwt-auth.guard");
 let AppModule = class AppModule {
 };
@@ -36,7 +37,7 @@ exports.AppModule = AppModule = __decorate([
                 database: 'presenteai',
                 entities: [__dirname + '/**/*.entity{.ts,.js}'],
                 synchronize: true,
-                logging: true,
+                logging: false,
             }),
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
@@ -46,6 +47,7 @@ exports.AppModule = AppModule = __decorate([
             payments_module_1.PaymentsModule,
             invites_module_1.InvitesModule,
             notifications_module_1.NotificationsModule,
+            debug_module_1.DebugModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

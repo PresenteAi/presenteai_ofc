@@ -3,15 +3,14 @@ import {
   Post, 
   Body, 
   Get, 
-  Param, 
+  Param,
   Put, 
   Delete, 
   Query,
   HttpCode,
   HttpStatus,
   UseGuards,
-  ParseUUIDPipe,
-  ValidationPipe
+  ParseIntPipe
 } from '@nestjs/common';
 import { Public } from '../../auth/decorators/public.decorator';
 import { UsersService } from './users.service';
@@ -58,8 +57,7 @@ export class UsersController {
     description: 'Email already exists' 
   })
   async create(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) 
-    dto: CreateUserDto
+    @Body() dto: CreateUserDto
   ): Promise<UserOutputDto> {
     return this.service.create(dto);
   }
@@ -83,8 +81,7 @@ export class UsersController {
   @ApiQuery({ name: 'sortOrder', required: false, description: 'Sort direction', enum: ['ASC', 'DESC'] })
   @ApiQuery({ name: 'search', required: false, description: 'Search term for name or email' })
   async findAll(
-    @Query(new ValidationPipe({ transform: true })) 
-    paginationDto: PaginationDto
+    @Query() paginationDto: PaginationDto
   ): Promise<PaginatedUsersDto> {
     return this.service.findAll(paginationDto);
   }
@@ -110,7 +107,7 @@ export class UsersController {
     description: 'User not found' 
   })
   async findById(
-    @Param('id', ParseUUIDPipe) id: string
+    @Param('id', ParseIntPipe) id: number
   ): Promise<UserOutputDto> {
     return this.service.findById(id);
   }
@@ -139,9 +136,8 @@ export class UsersController {
     description: 'Email already exists' 
   })
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) 
-    updateDto: UpdateUserDto
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateUserDto
   ): Promise<UserOutputDto> {
     return this.service.update(id, updateDto);
   }
@@ -167,7 +163,7 @@ export class UsersController {
     description: 'User not found' 
   })
   async remove(
-    @Param('id', ParseUUIDPipe) id: string
+    @Param('id', ParseIntPipe) id: number
   ): Promise<void> {
     return this.service.remove(id);
   }

@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsInt, Min, Max, IsString, IsIn } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class PaginationDto {
   @ApiProperty({ 
@@ -8,6 +10,10 @@ export class PaginationDto {
     default: 1,
     required: false
   })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
   page?: number = 1;
 
   @ApiProperty({ 
@@ -18,6 +24,11 @@ export class PaginationDto {
     default: 10,
     required: false
   })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
   limit?: number = 10;
 
   @ApiProperty({ 
@@ -26,6 +37,9 @@ export class PaginationDto {
     enum: ['name', 'email', 'createdAt', 'updatedAt'],
     required: false
   })
+  @IsOptional()
+  @IsString()
+  @IsIn(['name', 'email', 'createdAt', 'updatedAt'])
   sortBy?: string = 'createdAt';
 
   @ApiProperty({ 
@@ -34,6 +48,8 @@ export class PaginationDto {
     enum: ['ASC', 'DESC'],
     required: false
   })
+  @IsOptional()
+  @IsIn(['ASC', 'DESC'])
   sortOrder?: 'ASC' | 'DESC' = 'DESC';
 
   @ApiProperty({ 
@@ -41,5 +57,7 @@ export class PaginationDto {
     description: 'Search term for name or email',
     required: false
   })
+  @IsOptional()
+  @IsString()
   search?: string;
 }

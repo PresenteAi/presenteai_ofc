@@ -14,13 +14,13 @@ export enum EventType {
 
 @Entity('events')
 export class Event {
-  @ApiProperty({ example: 'uuid-string', description: 'Unique identifier of the event' })
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @ApiProperty({ example: 1, description: 'Unique identifier of the event' })
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @ApiProperty({ example: 'uuid-string', description: 'Reference to the event organizer' })
-  @Column({ type: 'uuid', name: 'user_id' })
-  userId: string;
+  @ApiProperty({ example: 1, description: 'Reference to the event organizer' })
+  @Column({ type: 'int', name: 'user_id' })
+  userId: number;
 
   @ApiProperty({ example: 'Casamento Ana & João', description: 'Event title' })
   @Column({ type: 'varchar', length: 200 })

@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaginationDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const class_validator_1 = require("class-validator");
+const class_transformer_1 = require("class-transformer");
 class PaginationDto {
     page = 1;
     limit = 10;
@@ -27,6 +29,10 @@ __decorate([
         default: 1,
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
     __metadata("design:type", Number)
 ], PaginationDto.prototype, "page", void 0);
 __decorate([
@@ -38,6 +44,11 @@ __decorate([
         default: 10,
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(100),
     __metadata("design:type", Number)
 ], PaginationDto.prototype, "limit", void 0);
 __decorate([
@@ -47,6 +58,9 @@ __decorate([
         enum: ['name', 'email', 'createdAt', 'updatedAt'],
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsIn)(['name', 'email', 'createdAt', 'updatedAt']),
     __metadata("design:type", String)
 ], PaginationDto.prototype, "sortBy", void 0);
 __decorate([
@@ -56,6 +70,8 @@ __decorate([
         enum: ['ASC', 'DESC'],
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsIn)(['ASC', 'DESC']),
     __metadata("design:type", String)
 ], PaginationDto.prototype, "sortOrder", void 0);
 __decorate([
@@ -64,6 +80,8 @@ __decorate([
         description: 'Search term for name or email',
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], PaginationDto.prototype, "search", void 0);
 //# sourceMappingURL=pagination.dto.js.map

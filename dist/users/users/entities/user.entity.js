@@ -26,9 +26,9 @@ let User = class User {
 };
 exports.User = User;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'uuid', description: 'User ID' }),
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'User ID' }),
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
 ], User.prototype, "id", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'João Silva', description: 'Full name of the user' }),

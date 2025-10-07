@@ -13,6 +13,7 @@ import { ContributionsModule } from './contributions/contributions.module';
 import { PaymentsModule } from './payments/payments.module';
 import { InvitesModule } from './invites/invites.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { DebugModule } from './debug/debug.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 
@@ -28,7 +29,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
       database: 'presenteai',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, // ⚠️ CUIDADO: Use apenas em desenvolvimento!
-      logging: true, // Para ver as queries SQL sendo executadas
+      logging: false, // Desabilitado para reduzir logs no console
     }),
     AuthModule,
     UsersModule,
@@ -38,6 +39,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     PaymentsModule,
     InvitesModule,
     NotificationsModule,
+    DebugModule,
   ],
   controllers: [AppController],
   providers: [

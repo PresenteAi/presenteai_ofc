@@ -31,7 +31,12 @@ export class AuthService {
       email: user.email,
     };
 
+    console.log('Creating JWT with payload:', JSON.stringify(payload, null, 2));
+    console.log('User ID type:', typeof user.id);
+
     const accessToken = this.jwtService.sign(payload);
+    
+    console.log('JWT created successfully, token length:', accessToken.length);
 
     return {
       accessToken,

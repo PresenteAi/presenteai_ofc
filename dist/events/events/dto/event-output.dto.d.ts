@@ -1,7 +1,7 @@
 import { EventType } from '../entities/event.entity';
 export declare class EventOutputDto {
-    id: string;
-    userId: string;
+    id: number;
+    userId: number;
     title: string;
     description?: string;
     eventType: EventType;

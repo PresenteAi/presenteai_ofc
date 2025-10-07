@@ -23,13 +23,26 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             secretOrKey: process.env.JWT_SECRET || 'your-secret-key-change-in-production',
         });
         this.usersService = usersService;
+        console.log('JWT Strategy initialized with secret:', process.env.JWT_SECRET ? 'FROM_ENV' : 'DEFAULT_SECRET');
     }
     async validate(payload) {
-        const user = await this.usersService.findById(payload.sub);
-        if (!user) {
-            throw new common_1.UnauthorizedException('User not found');
+        console.log('JWT Strategy validating payload:', JSON.stringify(payload, null, 2));
+        console.log('Looking for user with ID:', payload.sub, 'type:', typeof payload.sub);
+        try {
+            const user = await this.usersService.findById(payload.sub);
+            console.log('User found:', user ? 'YES' : 'NO');
+            if (!user) {
+                console.log('User not found in database');
+                throw new common_1.UnauthorizedException('User not found');
+            }
+            console.log('JWT validation successful for user:', user.email);
+            return user;
         }
-        return user;
+        catch (error) {
+            console.error('Error during JWT validation:', error.message);
+            console.error('Error stack:', error.stack);
+            throw error;
+        }
     }
 };
 exports.JwtStrategy = JwtStrategy;

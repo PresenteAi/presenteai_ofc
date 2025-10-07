@@ -93,14 +93,14 @@ let UsersService = class UsersService {
         };
     }
     async findById(id) {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid user ID');
         }
-        const user = await this.repository.findById(id.trim());
+        const user = await this.repository.findById(id);
         return this.mapToOutputDto(user);
     }
     async update(id, updateDto) {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid user ID');
         }
         await this.validateUpdateUserDto(updateDto);
@@ -121,14 +121,14 @@ let UsersService = class UsersService {
             updateData.indicatedById = updateDto.indicatedById;
             updateData.isIndicated = !!updateDto.indicatedById;
         }
-        const updatedUser = await this.repository.update(id.trim(), updateData);
+        const updatedUser = await this.repository.update(id, updateData);
         return this.mapToOutputDto(updatedUser);
     }
     async remove(id) {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid user ID');
         }
-        await this.repository.softDelete(id.trim());
+        await this.repository.softDelete(id);
     }
     async findByEmail(email) {
         if (!email || typeof email !== 'string') {
@@ -138,10 +138,10 @@ let UsersService = class UsersService {
         return user ? this.mapToOutputDto(user) : null;
     }
     async updateLastLogin(id) {
-        if (!id || typeof id !== 'string') {
+        if (!id || typeof id !== 'number' || id <= 0) {
             return;
         }
-        await this.repository.updateLastLogin(id.trim());
+        await this.repository.updateLastLogin(id);
     }
     async validatePassword(email, password) {
         if (!email || !password) {

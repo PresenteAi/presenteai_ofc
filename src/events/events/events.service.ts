@@ -26,7 +26,7 @@ export class EventsService {
         try {
             // Preparar dados do evento
             const eventData = {
-                userId: dto.userId.trim(),
+                userId: dto.userId,
                 title: dto.title.trim(),
                 description: dto.description?.trim() || undefined,
                 eventType: dto.eventType,
@@ -79,12 +79,12 @@ export class EventsService {
     /**
      * Busca evento por ID
      */
-    async findById(id: string): Promise<EventOutputDto> {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+    async findById(id: number): Promise<EventOutputDto> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid event ID');
         }
 
-        const event = await this.repository.findById(id.trim());
+        const event = await this.repository.findById(id);
         return this.mapToOutputDto(event);
     }
 
@@ -124,11 +124,11 @@ export class EventsService {
 
         if (paginationDto) {
             // Use findAll with userId filter for pagination
-            paginationDto.userId = userId.trim();
+            paginationDto.userId = Number(userId);
             return this.findAll(paginationDto);
         } else {
             // Original behavior - return all events for user
-            const events = await this.repository.findByUserId(userId.trim());
+            const events = await this.repository.findByUserId(Number(userId));
             return events.map(event => this.mapToOutputDto(event));
         }
     }
@@ -136,16 +136,16 @@ export class EventsService {
     /**
      * Atualiza um evento
      */
-    async update(id: string, updateDto: UpdateEventDto, userId?: string): Promise<EventOutputDto> {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+    async update(id: number, updateDto: UpdateEventDto, userId?: number): Promise<EventOutputDto> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid event ID');
         }
 
         // Verificar se o evento existe
-        const existingEvent = await this.repository.findById(id.trim());
+        const existingEvent = await this.repository.findById(id);
 
         // Verificar permissão (se userId fornecido, deve ser o dono do evento)
-        if (userId && existingEvent.userId !== userId) {
+        if (userId && existingEvent.userId !== Number(userId)) {
             throw new ForbiddenException('You can only update your own events');
         }
 
@@ -206,46 +206,36 @@ export class EventsService {
             updateData.isActive = updateDto.isActive;
         }
 
-        const updatedEvent = await this.repository.update(id.trim(), updateData);
+        const updatedEvent = await this.repository.update(id, updateData);
         return this.mapToOutputDto(updatedEvent);
     }
 
     /**
      * Remove evento (soft delete)
      */
-    async remove(id: string, userId?: string): Promise<void> {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+    async remove(id: number): Promise<void> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid event ID');
         }
 
         // Verificar se o evento existe
-        const existingEvent = await this.repository.findById(id.trim());
+        const existingEvent = await this.repository.findById(id);
 
-        // Verificar permissão (se userId fornecido, deve ser o dono do evento)
-        if (userId && existingEvent.userId !== userId) {
-            throw new ForbiddenException('You can only delete your own events');
-        }
-
-        await this.repository.softDelete(id.trim());
+        await this.repository.softDelete(id);
     }
 
     /**
      * Publica/despublica um evento
      */
-    async togglePublish(id: string, isPublished: boolean, userId?: string): Promise<EventOutputDto> {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+    async togglePublish(id: number, isPublished: boolean): Promise<EventOutputDto> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid event ID');
         }
 
         // Verificar se o evento existe
-        const existingEvent = await this.repository.findById(id.trim());
+        const existingEvent = await this.repository.findById(id);
 
-        // Verificar permissão (se userId fornecido, deve ser o dono do evento)
-        if (userId && existingEvent.userId !== userId) {
-            throw new ForbiddenException('You can only modify your own events');
-        }
-
-        const updatedEvent = await this.repository.togglePublish(id.trim(), isPublished);
+        const updatedEvent = await this.repository.togglePublish(id, isPublished);
         return this.mapToOutputDto(updatedEvent);
     }
 
@@ -264,7 +254,7 @@ export class EventsService {
             return 0;
         }
 
-        return await this.repository.countByUserId(userId.trim());
+        return await this.repository.countByUserId(Number(userId));
     }
 
     /**
@@ -281,7 +271,7 @@ export class EventsService {
         const errors: string[] = [];
 
         // Validar userId
-        if (!dto.userId || typeof dto.userId !== 'string' || dto.userId.trim().length === 0) {
+        if (!dto.userId || typeof dto.userId !== 'number' || dto.userId <= 0) {
             errors.push('User ID is required');
         }
 
@@ -463,7 +453,7 @@ export class EventsService {
             sortOrder: dto.sortOrder === 'ASC' ? 'ASC' : 'DESC',
             search: dto.search ? dto.search.trim() : undefined,
             eventType: dto.eventType && Object.values(EventType).includes(dto.eventType) ? dto.eventType : undefined,
-            userId: dto.userId ? dto.userId.trim() : undefined,
+            userId: dto.userId ? dto.userId : undefined,
             isPublished: dto.isPublished,
             isActive: dto.isActive !== undefined ? dto.isActive : true
         };

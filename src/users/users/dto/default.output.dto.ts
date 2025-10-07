@@ -2,10 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UserOutputDto {
   @ApiProperty({ 
-    example: 'uuid-string',
+    example: 1,
     description: 'Unique identifier of the user'
   })
-  id: string;
+  id: number;
 
   @ApiProperty({ 
     example: 'João Silva',

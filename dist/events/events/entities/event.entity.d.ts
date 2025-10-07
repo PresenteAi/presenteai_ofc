@@ -9,8 +9,8 @@ export declare enum EventType {
     OTHER = "other"
 }
 export declare class Event {
-    id: string;
-    userId: string;
+    id: number;
+    userId: number;
     title: string;
     description?: string;
     eventType: EventType;

@@ -45,14 +45,14 @@ let Event = class Event {
 };
 exports.Event = Event;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'uuid-string', description: 'Unique identifier of the event' }),
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
-    __metadata("design:type", String)
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Unique identifier of the event' }),
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
 ], Event.prototype, "id", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'uuid-string', description: 'Reference to the event organizer' }),
-    (0, typeorm_1.Column)({ type: 'uuid', name: 'user_id' }),
-    __metadata("design:type", String)
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Reference to the event organizer' }),
+    (0, typeorm_1.Column)({ type: 'int', name: 'user_id' }),
+    __metadata("design:type", Number)
 ], Event.prototype, "userId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'Casamento Ana & João', description: 'Event title' }),

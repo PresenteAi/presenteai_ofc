@@ -73,20 +73,20 @@ export class UsersService {
     /**
      * Busca usuário por ID
      */
-    async findById(id: string): Promise<UserOutputDto> {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+    async findById(id: number): Promise<UserOutputDto> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid user ID');
         }
 
-        const user = await this.repository.findById(id.trim());
+        const user = await this.repository.findById(id);
         return this.mapToOutputDto(user);
     }
 
     /**
      * Atualiza um usuário
      */
-    async update(id: string, updateDto: UpdateUserDto): Promise<UserOutputDto> {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+    async update(id: number, updateDto: UpdateUserDto): Promise<UserOutputDto> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid user ID');
         }
 
@@ -116,19 +116,19 @@ export class UsersService {
             updateData.isIndicated = !!updateDto.indicatedById;
         }
 
-        const updatedUser = await this.repository.update(id.trim(), updateData);
+        const updatedUser = await this.repository.update(id, updateData);
         return this.mapToOutputDto(updatedUser);
     }
 
     /**
      * Remove usuário (soft delete)
      */
-    async remove(id: string): Promise<void> {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+    async remove(id: number): Promise<void> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid user ID');
         }
 
-        await this.repository.softDelete(id.trim());
+        await this.repository.softDelete(id);
     }
 
     /**
@@ -146,12 +146,12 @@ export class UsersService {
     /**
      * Atualiza o último login do usuário
      */
-    async updateLastLogin(id: string): Promise<void> {
-        if (!id || typeof id !== 'string') {
+    async updateLastLogin(id: number): Promise<void> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             return;
         }
 
-        await this.repository.updateLastLogin(id.trim());
+        await this.repository.updateLastLogin(id);
     }
 
     /**

@@ -13,13 +13,13 @@ export declare class EventsService {
     constructor(repository: EventsRepository);
     create(dto: CreateEventDto): Promise<EventOutputDto>;
     findAll(paginationDto: EventPaginationDto): Promise<PaginatedEventsDto>;
-    findById(id: string): Promise<EventOutputDto>;
+    findById(id: number): Promise<EventOutputDto>;
     findByPublicUrl(publicUrl: string): Promise<EventOutputDto | null>;
     findByUserId(userId: string): Promise<EventOutputDto[]>;
     findByUserId(userId: string, paginationDto: EventPaginationDto): Promise<PaginatedEventsDto>;
-    update(id: string, updateDto: UpdateEventDto, userId?: string): Promise<EventOutputDto>;
-    remove(id: string, userId?: string): Promise<void>;
-    togglePublish(id: string, isPublished: boolean, userId?: string): Promise<EventOutputDto>;
+    update(id: number, updateDto: UpdateEventDto, userId?: number): Promise<EventOutputDto>;
+    remove(id: number): Promise<void>;
+    togglePublish(id: number, isPublished: boolean): Promise<EventOutputDto>;
     countActiveEvents(): Promise<number>;
     countByUserId(userId: string): Promise<number>;
     findUpcomingEvents(days?: number): Promise<EventOutputDto[]>;

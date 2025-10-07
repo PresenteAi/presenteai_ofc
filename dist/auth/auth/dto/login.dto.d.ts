@@ -7,7 +7,7 @@ export declare class LoginResponseDto {
     tokenType: string;
     expiresIn: number;
     user: {
-        id: string;
+        id: number;
         name: string;
         email: string;
     };

@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventPaginationDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const class_validator_1 = require("class-validator");
+const class_transformer_1 = require("class-transformer");
 const event_entity_1 = require("../entities/event.entity");
 class EventPaginationDto {
     page = 1;
@@ -32,6 +34,10 @@ __decorate([
         default: 1,
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
     __metadata("design:type", Number)
 ], EventPaginationDto.prototype, "page", void 0);
 __decorate([
@@ -43,6 +49,11 @@ __decorate([
         default: 10,
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(100),
     __metadata("design:type", Number)
 ], EventPaginationDto.prototype, "limit", void 0);
 __decorate([
@@ -52,6 +63,9 @@ __decorate([
         enum: ['title', 'eventType', 'startDate', 'createdAt', 'updatedAt'],
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsIn)(['title', 'eventType', 'startDate', 'createdAt', 'updatedAt']),
     __metadata("design:type", String)
 ], EventPaginationDto.prototype, "sortBy", void 0);
 __decorate([
@@ -61,6 +75,8 @@ __decorate([
         enum: ['ASC', 'DESC'],
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsIn)(['ASC', 'DESC']),
     __metadata("design:type", String)
 ], EventPaginationDto.prototype, "sortOrder", void 0);
 __decorate([
@@ -69,6 +85,8 @@ __decorate([
         description: 'Search term for title or description',
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], EventPaginationDto.prototype, "search", void 0);
 __decorate([
@@ -78,15 +96,20 @@ __decorate([
         enum: event_entity_1.EventType,
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(event_entity_1.EventType),
     __metadata("design:type", String)
 ], EventPaginationDto.prototype, "eventType", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        example: 'uuid-string',
+        example: 1,
         description: 'Filter by user/organizer ID',
         required: false
     }),
-    __metadata("design:type", String)
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
 ], EventPaginationDto.prototype, "userId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
@@ -94,6 +117,9 @@ __decorate([
         description: 'Filter by published status',
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Boolean),
+    (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], EventPaginationDto.prototype, "isPublished", void 0);
 __decorate([
@@ -102,6 +128,9 @@ __decorate([
         description: 'Filter by active status',
         required: false
     }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Boolean),
+    (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], EventPaginationDto.prototype, "isActive", void 0);
 //# sourceMappingURL=event-pagination.dto.js.map

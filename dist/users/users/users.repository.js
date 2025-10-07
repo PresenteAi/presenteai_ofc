@@ -70,22 +70,11 @@ let UsersRepository = class UsersRepository {
         return { users, total };
     }
     async findById(id) {
-        if (!id || typeof id !== 'string') {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid user ID');
         }
         const user = await this.repository.findOne({
-            where: { id, isActive: true },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                isActive: true,
-                isIndicated: true,
-                indicatedById: true,
-                createdAt: true,
-                updatedAt: true,
-                lastLoginAt: true,
-            }
+            where: { id }
         });
         if (!user) {
             throw new common_1.NotFoundException(`User with id ${id} not found`);
@@ -109,7 +98,7 @@ let UsersRepository = class UsersRepository {
         });
     }
     async update(id, updateData) {
-        if (!id || typeof id !== 'string') {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid user ID');
         }
         const existingUser = await this.findById(id);
@@ -132,7 +121,7 @@ let UsersRepository = class UsersRepository {
         }
     }
     async softDelete(id) {
-        if (!id || typeof id !== 'string') {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid user ID');
         }
         const user = await this.findById(id);
@@ -142,7 +131,7 @@ let UsersRepository = class UsersRepository {
         });
     }
     async updateLastLogin(id) {
-        if (!id || typeof id !== 'string') {
+        if (!id || typeof id !== 'number' || id <= 0) {
             return;
         }
         await this.repository.update(id, {
@@ -154,7 +143,7 @@ let UsersRepository = class UsersRepository {
         return await this.repository.count({ where: { isActive: true } });
     }
     async exists(id) {
-        if (!id || typeof id !== 'string') {
+        if (!id || typeof id !== 'number' || id <= 0) {
             return false;
         }
         const count = await this.repository.count({

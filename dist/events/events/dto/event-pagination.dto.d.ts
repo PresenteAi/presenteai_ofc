@@ -6,7 +6,7 @@ export declare class EventPaginationDto {
     sortOrder?: 'ASC' | 'DESC';
     search?: string;
     eventType?: EventType;
-    userId?: string;
+    userId?: number;
     isPublished?: boolean;
     isActive?: boolean;
 }

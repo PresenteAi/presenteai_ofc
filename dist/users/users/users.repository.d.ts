@@ -9,12 +9,12 @@ export declare class UsersRepository {
         users: User[];
         total: number;
     }>;
-    findById(id: string): Promise<User>;
+    findById(id: number): Promise<User>;
     findByEmail(email: string): Promise<User | null>;
     findByEmailWithPassword(email: string): Promise<User | null>;
-    update(id: string, updateData: Partial<User>): Promise<User>;
-    softDelete(id: string): Promise<void>;
-    updateLastLogin(id: string): Promise<void>;
+    update(id: number, updateData: Partial<User>): Promise<User>;
+    softDelete(id: number): Promise<void>;
+    updateLastLogin(id: number): Promise<void>;
     countActiveUsers(): Promise<number>;
-    exists(id: string): Promise<boolean>;
+    exists(id: number): Promise<boolean>;
 }

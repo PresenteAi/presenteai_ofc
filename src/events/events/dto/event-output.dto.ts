@@ -3,16 +3,16 @@ import { EventType } from '../entities/event.entity';
 
 export class EventOutputDto {
   @ApiProperty({ 
-    example: 'uuid-string',
+    example: 1,
     description: 'Unique identifier of the event'
   })
-  id: string;
+  id: number;
 
   @ApiProperty({ 
-    example: 'uuid-string',
+    example: 1,
     description: 'Reference to the event organizer'
   })
-  userId: string;
+  userId: number;
 
   @ApiProperty({ 
     example: 'Casamento Ana & João',

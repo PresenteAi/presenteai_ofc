@@ -10,7 +10,7 @@ describe('UsersRepository', () => {
   let mockRepository: Partial<Repository<User>>;
 
   const mockUser = {
-    id: '123e4567-e89b-12d3-a456-426614174000',
+    id: 1,
     name: 'Test User',
     email: 'test@example.com',
     passwordHash: 'hashedpassword',
@@ -77,7 +77,7 @@ describe('UsersRepository', () => {
     it('should return user when found', async () => {
       mockRepository.findOne = jest.fn().mockResolvedValue(mockUser);
 
-      const result = await repository.findById('123e4567-e89b-12d3-a456-426614174000');
+      const result = await repository.findById(1);
 
       expect(result).toEqual(mockUser);
     });
@@ -86,12 +86,13 @@ describe('UsersRepository', () => {
       mockRepository.findOne = jest.fn().mockResolvedValue(null);
 
       await expect(
-        repository.findById('123e4567-e89b-12d3-a456-426614174000')
+        repository.findById(999)
       ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw BadRequestException for invalid ID', async () => {
-      await expect(repository.findById('')).rejects.toThrow(BadRequestException);
+      await expect(repository.findById(0)).rejects.toThrow(BadRequestException);
+      await expect(repository.findById(-1)).rejects.toThrow(BadRequestException);
       await expect(repository.findById(null as any)).rejects.toThrow(BadRequestException);
     });
   });
@@ -118,10 +119,10 @@ describe('UsersRepository', () => {
     it('should deactivate user successfully', async () => {
       mockRepository.findOne = jest.fn().mockResolvedValue(mockUser);
 
-      await repository.softDelete('123e4567-e89b-12d3-a456-426614174000');
+      await repository.softDelete(1);
 
       expect(mockRepository.update).toHaveBeenCalledWith(
-        '123e4567-e89b-12d3-a456-426614174000',
+        1,
         expect.objectContaining({
           isActive: false,
         })

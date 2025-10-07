@@ -26,7 +26,7 @@ let EventsService = class EventsService {
         await this.validateCreateEventDto(dto);
         try {
             const eventData = {
-                userId: dto.userId.trim(),
+                userId: dto.userId,
                 title: dto.title.trim(),
                 description: dto.description?.trim() || undefined,
                 eventType: dto.eventType,
@@ -68,10 +68,10 @@ let EventsService = class EventsService {
         };
     }
     async findById(id) {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid event ID');
         }
-        const event = await this.repository.findById(id.trim());
+        const event = await this.repository.findById(id);
         return this.mapToOutputDto(event);
     }
     async findByPublicUrl(publicUrl) {
@@ -98,20 +98,20 @@ let EventsService = class EventsService {
             return [];
         }
         if (paginationDto) {
-            paginationDto.userId = userId.trim();
+            paginationDto.userId = Number(userId);
             return this.findAll(paginationDto);
         }
         else {
-            const events = await this.repository.findByUserId(userId.trim());
+            const events = await this.repository.findByUserId(Number(userId));
             return events.map(event => this.mapToOutputDto(event));
         }
     }
     async update(id, updateDto, userId) {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid event ID');
         }
-        const existingEvent = await this.repository.findById(id.trim());
-        if (userId && existingEvent.userId !== userId) {
+        const existingEvent = await this.repository.findById(id);
+        if (userId && existingEvent.userId !== Number(userId)) {
             throw new common_1.ForbiddenException('You can only update your own events');
         }
         await this.validateUpdateEventDto(updateDto);
@@ -155,28 +155,22 @@ let EventsService = class EventsService {
         if (updateDto.isActive !== undefined) {
             updateData.isActive = updateDto.isActive;
         }
-        const updatedEvent = await this.repository.update(id.trim(), updateData);
+        const updatedEvent = await this.repository.update(id, updateData);
         return this.mapToOutputDto(updatedEvent);
     }
-    async remove(id, userId) {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+    async remove(id) {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid event ID');
         }
-        const existingEvent = await this.repository.findById(id.trim());
-        if (userId && existingEvent.userId !== userId) {
-            throw new common_1.ForbiddenException('You can only delete your own events');
-        }
-        await this.repository.softDelete(id.trim());
+        const existingEvent = await this.repository.findById(id);
+        await this.repository.softDelete(id);
     }
-    async togglePublish(id, isPublished, userId) {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+    async togglePublish(id, isPublished) {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid event ID');
         }
-        const existingEvent = await this.repository.findById(id.trim());
-        if (userId && existingEvent.userId !== userId) {
-            throw new common_1.ForbiddenException('You can only modify your own events');
-        }
-        const updatedEvent = await this.repository.togglePublish(id.trim(), isPublished);
+        const existingEvent = await this.repository.findById(id);
+        const updatedEvent = await this.repository.togglePublish(id, isPublished);
         return this.mapToOutputDto(updatedEvent);
     }
     async countActiveEvents() {
@@ -186,7 +180,7 @@ let EventsService = class EventsService {
         if (!userId || typeof userId !== 'string') {
             return 0;
         }
-        return await this.repository.countByUserId(userId.trim());
+        return await this.repository.countByUserId(Number(userId));
     }
     async findUpcomingEvents(days = 7) {
         const events = await this.repository.findUpcomingEvents(days);
@@ -194,7 +188,7 @@ let EventsService = class EventsService {
     }
     async validateCreateEventDto(dto) {
         const errors = [];
-        if (!dto.userId || typeof dto.userId !== 'string' || dto.userId.trim().length === 0) {
+        if (!dto.userId || typeof dto.userId !== 'number' || dto.userId <= 0) {
             errors.push('User ID is required');
         }
         if (!dto.title || typeof dto.title !== 'string') {
@@ -360,7 +354,7 @@ let EventsService = class EventsService {
             sortOrder: dto.sortOrder === 'ASC' ? 'ASC' : 'DESC',
             search: dto.search ? dto.search.trim() : undefined,
             eventType: dto.eventType && Object.values(event_entity_1.EventType).includes(dto.eventType) ? dto.eventType : undefined,
-            userId: dto.userId ? dto.userId.trim() : undefined,
+            userId: dto.userId ? dto.userId : undefined,
             isPublished: dto.isPublished,
             isActive: dto.isActive !== undefined ? dto.isActive : true
         };

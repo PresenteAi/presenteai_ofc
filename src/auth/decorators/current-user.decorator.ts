@@ -9,7 +9,7 @@ export const CurrentUser = createParamDecorator(
 );
 
 export const UserId = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): string => {
+  (data: unknown, ctx: ExecutionContext): number => {
     const request = ctx.switchToHttp().getRequest();
     return request.user?.id;
   },

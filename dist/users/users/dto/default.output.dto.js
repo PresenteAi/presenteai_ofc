@@ -25,10 +25,10 @@ class UserOutputDto {
 exports.UserOutputDto = UserOutputDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
-        example: 'uuid-string',
+        example: 1,
         description: 'Unique identifier of the user'
     }),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], UserOutputDto.prototype, "id", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({

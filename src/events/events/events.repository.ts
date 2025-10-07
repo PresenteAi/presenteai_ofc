@@ -114,12 +114,12 @@ export class EventsRepository {
     /**
      * Busca evento por ID (apenas ativos)
      */
-    async findById(id: string): Promise<Event> {
-        if (!id || typeof id !== 'string') {
+    async findById(id: number): Promise<Event> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid event ID');
         }
 
-        const event = await this.repository.findOne({ 
+        const event = await this.repository.findOne({
             where: { id, isActive: true },
             relations: ['user'],
             select: {
@@ -195,8 +195,8 @@ export class EventsRepository {
     /**
      * Busca eventos por usuário
      */
-    async findByUserId(userId: string): Promise<Event[]> {
-        if (!userId || typeof userId !== 'string') {
+    async findByUserId(userId: number): Promise<Event[]> {
+        if (!userId || typeof userId !== 'number' || userId <= 0) {
             return [];
         }
 
@@ -234,8 +234,8 @@ export class EventsRepository {
     /**
      * Atualiza um evento
      */
-    async update(id: string, updateData: Partial<Event>): Promise<Event> {
-        if (!id || typeof id !== 'string') {
+    async update(id: number, updateData: Partial<Event>): Promise<Event> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid event ID');
         }
 
@@ -269,8 +269,8 @@ export class EventsRepository {
     /**
      * Soft delete - desativa o evento ao invés de deletar
      */
-    async softDelete(id: string): Promise<void> {
-        if (!id || typeof id !== 'string') {
+    async softDelete(id: number): Promise<void> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid event ID');
         }
 
@@ -285,8 +285,8 @@ export class EventsRepository {
     /**
      * Publica/despublica um evento
      */
-    async togglePublish(id: string, isPublished: boolean): Promise<Event> {
-        if (!id || typeof id !== 'string') {
+    async togglePublish(id: number, isPublished: boolean): Promise<Event> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid event ID');
         }
 
@@ -310,21 +310,21 @@ export class EventsRepository {
     /**
      * Conta eventos por usuário
      */
-    async countByUserId(userId: string): Promise<number> {
-        if (!userId || typeof userId !== 'string') {
+    async countByUserId(userId: number): Promise<number> {
+        if (!userId || typeof userId !== 'number' || userId <= 0) {
             return 0;
         }
 
-        return await this.repository.count({ 
-            where: { userId, isActive: true } 
+        return await this.repository.count({
+            where: { userId, isActive: true }
         });
     }
 
     /**
      * Verifica se um evento existe pelo ID
      */
-    async exists(id: string): Promise<boolean> {
-        if (!id || typeof id !== 'string') {
+    async exists(id: number): Promise<boolean> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             return false;
         }
 

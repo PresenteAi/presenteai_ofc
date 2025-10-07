@@ -9,14 +9,14 @@ export declare class EventsRepository {
         events: Event[];
         total: number;
     }>;
-    findById(id: string): Promise<Event>;
+    findById(id: number): Promise<Event>;
     findByPublicUrl(publicUrl: string): Promise<Event | null>;
-    findByUserId(userId: string): Promise<Event[]>;
-    update(id: string, updateData: Partial<Event>): Promise<Event>;
-    softDelete(id: string): Promise<void>;
-    togglePublish(id: string, isPublished: boolean): Promise<Event>;
+    findByUserId(userId: number): Promise<Event[]>;
+    update(id: number, updateData: Partial<Event>): Promise<Event>;
+    softDelete(id: number): Promise<void>;
+    togglePublish(id: number, isPublished: boolean): Promise<Event>;
     countActiveEvents(): Promise<number>;
-    countByUserId(userId: string): Promise<number>;
-    exists(id: string): Promise<boolean>;
+    countByUserId(userId: number): Promise<number>;
+    exists(id: number): Promise<boolean>;
     findUpcomingEvents(days?: number): Promise<Event[]>;
 }

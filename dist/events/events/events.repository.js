@@ -93,7 +93,7 @@ let EventsRepository = class EventsRepository {
         return { events, total };
     }
     async findById(id) {
-        if (!id || typeof id !== 'string') {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid event ID');
         }
         const event = await this.repository.findOne({
@@ -163,7 +163,7 @@ let EventsRepository = class EventsRepository {
         });
     }
     async findByUserId(userId) {
-        if (!userId || typeof userId !== 'string') {
+        if (!userId || typeof userId !== 'number' || userId <= 0) {
             return [];
         }
         return await this.repository.find({
@@ -197,7 +197,7 @@ let EventsRepository = class EventsRepository {
         });
     }
     async update(id, updateData) {
-        if (!id || typeof id !== 'string') {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid event ID');
         }
         const existingEvent = await this.findById(id);
@@ -220,7 +220,7 @@ let EventsRepository = class EventsRepository {
         }
     }
     async softDelete(id) {
-        if (!id || typeof id !== 'string') {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid event ID');
         }
         const event = await this.findById(id);
@@ -230,7 +230,7 @@ let EventsRepository = class EventsRepository {
         });
     }
     async togglePublish(id, isPublished) {
-        if (!id || typeof id !== 'string') {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid event ID');
         }
         const event = await this.findById(id);
@@ -244,7 +244,7 @@ let EventsRepository = class EventsRepository {
         return await this.repository.count({ where: { isActive: true } });
     }
     async countByUserId(userId) {
-        if (!userId || typeof userId !== 'string') {
+        if (!userId || typeof userId !== 'number' || userId <= 0) {
             return 0;
         }
         return await this.repository.count({
@@ -252,7 +252,7 @@ let EventsRepository = class EventsRepository {
         });
     }
     async exists(id) {
-        if (!id || typeof id !== 'string') {
+        if (!id || typeof id !== 'number' || id <= 0) {
             return false;
         }
         const count = await this.repository.count({

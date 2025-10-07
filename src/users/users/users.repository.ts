@@ -78,30 +78,19 @@ export class UsersRepository {
     /**
      * Busca usuário por ID (apenas ativos)
      */
-    async findById(id: string): Promise<User> {
-        if (!id || typeof id !== 'string') {
+    async findById(id: number): Promise<User> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid user ID');
         }
 
-        const user = await this.repository.findOne({ 
-            where: { id, isActive: true },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                isActive: true,
-                isIndicated: true,
-                indicatedById: true,
-                createdAt: true,
-                updatedAt: true,
-                lastLoginAt: true,
-                // Excluir passwordHash por segurança
-            }
+        const user = await this.repository.findOne({
+            where: { id }
         });
 
         if (!user) {
             throw new NotFoundException(`User with id ${id} not found`);
         }
+        
         return user;
     }
 
@@ -134,8 +123,8 @@ export class UsersRepository {
     /**
      * Atualiza um usuário
      */
-    async update(id: string, updateData: Partial<User>): Promise<User> {
-        if (!id || typeof id !== 'string') {
+    async update(id: number, updateData: Partial<User>): Promise<User> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid user ID');
         }
 
@@ -169,8 +158,8 @@ export class UsersRepository {
     /**
      * Soft delete - desativa o usuário ao invés de deletar
      */
-    async softDelete(id: string): Promise<void> {
-        if (!id || typeof id !== 'string') {
+    async softDelete(id: number): Promise<void> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid user ID');
         }
 
@@ -185,8 +174,8 @@ export class UsersRepository {
     /**
      * Atualiza o último login
      */
-    async updateLastLogin(id: string): Promise<void> {
-        if (!id || typeof id !== 'string') {
+    async updateLastLogin(id: number): Promise<void> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             return;
         }
 
@@ -206,8 +195,8 @@ export class UsersRepository {
     /**
      * Verifica se um usuário existe pelo ID
      */
-    async exists(id: string): Promise<boolean> {
-        if (!id || typeof id !== 'string') {
+    async exists(id: number): Promise<boolean> {
+        if (!id || typeof id !== 'number' || id <= 0) {
             return false;
         }
 

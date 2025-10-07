@@ -3,5 +3,6 @@ import { LoginDto, LoginResponseDto } from './dto/login.dto';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    login(loginDto: LoginDto): Promise<LoginResponseDto>;
+    login(dto: LoginDto): Promise<LoginResponseDto>;
+    getMe(userId: number, user: any): Promise<any>;
 }

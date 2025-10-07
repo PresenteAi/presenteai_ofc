@@ -9,8 +9,7 @@ import {
   Query,
   HttpCode,
   HttpStatus,
-  ParseUUIDPipe,
-  ValidationPipe,
+  ParseIntPipe,
   Patch,
   ForbiddenException
 } from '@nestjs/common';
@@ -32,10 +31,12 @@ import {
   ApiConflictResponse,
   ApiForbiddenResponse,
   ApiParam,
-  ApiQuery
+  ApiQuery,
+  ApiBearerAuth
 } from '@nestjs/swagger';
 
 @ApiTags('events')
+@ApiBearerAuth()
 @Controller('events')
 export class EventsController {
   constructor(private readonly service: EventsService) {}
@@ -61,13 +62,27 @@ export class EventsController {
     description: 'Public URL already exists' 
   })
   async create(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) 
-    dto: CreateEventDto,
-    @UserId() userId: string
+    @Body() dto: CreateEventDto,
+    @UserId() userId: number
   ): Promise<EventOutputDto> {
-    // Set the userId from the authenticated user
-    dto.userId = userId;
-    return this.service.create(dto);
+    try {
+      console.log('Creating event for userId:', userId, "userId type:", typeof userId);
+      console.log('DTO received:', JSON.stringify(dto, null, 2));
+      
+      // Set the userId from the authenticated user
+      dto.userId = userId;
+      
+      console.log('DTO after userId set:', JSON.stringify(dto, null, 2));
+      
+      return this.service.create(dto);
+    } catch (error) {
+      console.error('Error creating event:');
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      console.error('Full error:', error);
+      throw error;
+    }
   }
 
   /**
@@ -93,9 +108,8 @@ export class EventsController {
   @ApiQuery({ name: 'isPublished', required: false, description: 'Filter by published status' })
   @ApiQuery({ name: 'isActive', required: false, description: 'Filter by active status' })
   async findAll(
-    @Query(new ValidationPipe({ transform: true })) 
-    paginationDto: EventPaginationDto,
-    @UserId() userId: string
+    @Query() paginationDto: EventPaginationDto,
+    @UserId() userId: number
   ): Promise<PaginatedEventsDto> {
     // Force the userId filter to show only user's own events
     paginationDto.userId = userId;
@@ -123,8 +137,8 @@ export class EventsController {
     description: 'Event not found' 
   })
   async findById(
-    @Param('id', ParseUUIDPipe) id: string,
-    @UserId() userId: string
+    @Param('id', ParseIntPipe) id: number,
+    @UserId() userId: number
   ): Promise<EventOutputDto> {
     // Check if event belongs to user
     const event = await this.service.findById(id);
@@ -187,10 +201,9 @@ export class EventsController {
     description: 'You can only update your own events' 
   })
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) 
-    updateDto: UpdateEventDto,
-    @UserId() userId: string
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateEventDto,
+    @UserId() userId: number
   ): Promise<EventOutputDto> {
     // Check if event belongs to user before updating
     const event = await this.service.findById(id);
@@ -224,8 +237,8 @@ export class EventsController {
     description: 'You can only delete your own events' 
   })
   async remove(
-    @Param('id', ParseUUIDPipe) id: string,
-    @UserId() userId: string
+    @Param('id', ParseIntPipe) id: number,
+    @UserId() userId: number
   ): Promise<void> {
     // Check if event belongs to user before deleting
     const event = await this.service.findById(id);
@@ -259,11 +272,11 @@ export class EventsController {
     description: 'You can only modify your own events' 
   })
   async togglePublish(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: { isPublished: boolean },
-    @UserId() userId: string
+    @Param('id', ParseIntPipe) id: number,
+    @Body('isPublished') isPublished: boolean,
+    @UserId() userId: number
   ): Promise<EventOutputDto> {
-    if (typeof body.isPublished !== 'boolean') {
+    if (typeof isPublished !== 'boolean') {
       throw new Error('isPublished must be a boolean');
     }
     // Check if event belongs to user before updating
@@ -271,7 +284,7 @@ export class EventsController {
     if (event.userId !== userId) {
       throw new ForbiddenException('You can only modify your own events');
     }
-    return this.service.togglePublish(id, body.isPublished);
+    return this.service.togglePublish(id, isPublished);
   }
 
   /**
@@ -320,5 +333,26 @@ export class EventsController {
   ): Promise<EventOutputDto[]> {
     const daysToCheck = days && days > 0 && days <= 30 ? days : 7;
     return this.service.findUpcomingEvents(daysToCheck);
+  }
+
+  /**
+   * Endpoint de teste - público para testar se API está funcionando
+   */
+  @Get('test')
+  @Public()
+  @ApiOperation({ 
+    summary: 'Test endpoint (public)',
+    description: 'Public endpoint to test if API is working'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'API is working' 
+  })
+  async test(): Promise<any> {
+    return {
+      success: true,
+      message: 'Events API is working!',
+      timestamp: new Date().toISOString()
+    };
   }
 }

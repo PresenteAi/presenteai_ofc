@@ -9,9 +9,9 @@ export declare class UsersController {
     constructor(service: UsersService);
     create(dto: CreateUserDto): Promise<UserOutputDto>;
     findAll(paginationDto: PaginationDto): Promise<PaginatedUsersDto>;
-    findById(id: string): Promise<UserOutputDto>;
-    update(id: string, updateDto: UpdateUserDto): Promise<UserOutputDto>;
-    remove(id: string): Promise<void>;
+    findById(id: number): Promise<UserOutputDto>;
+    update(id: number, updateDto: UpdateUserDto): Promise<UserOutputDto>;
+    remove(id: number): Promise<void>;
     findByEmail(email: string): Promise<UserOutputDto | null>;
     countActiveUsers(): Promise<{
         count: number;
