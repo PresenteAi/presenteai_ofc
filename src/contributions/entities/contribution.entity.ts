@@ -3,6 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  OneToMany,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
@@ -106,6 +107,13 @@ export class Contribution {
   @ManyToOne(() => GiftEvent, { eager: false })
   @JoinColumn({ name: 'event_gift_id' })
   eventGift: GiftEvent;
+
+  /**
+   * All transactions related to this contribution
+   * A contribution can have multiple transaction attempts (retries, different payment methods, etc.)
+   */
+  @OneToMany('Transaction', 'contribution', { cascade: false })
+  transactions: any[]; // Using any[] to avoid circular import
 
   // Business logic methods
 

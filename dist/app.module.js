@@ -16,8 +16,9 @@ const auth_module_1 = require("./auth/auth.module");
 const users_module_1 = require("./users/users.module");
 const events_module_1 = require("./events/events.module");
 const gifts_module_1 = require("./gifts/gifts.module");
-const contributions_module_1 = require("./contributions/contributions.module");
+const contributions_module_1 = require("./contributions/contributions-module");
 const payments_module_1 = require("./payments/payments.module");
+const transactions_module_1 = require("./transactions/transactions.module");
 const invites_module_1 = require("./invites/invites.module");
 const notifications_module_1 = require("./notifications/notifications.module");
 const debug_module_1 = require("./debug/debug.module");
@@ -45,6 +46,7 @@ exports.AppModule = AppModule = __decorate([
             gifts_module_1.GiftsModule,
             contributions_module_1.ContributionsModule,
             payments_module_1.PaymentsModule,
+            transactions_module_1.TransactionsModule,
             invites_module_1.InvitesModule,
             notifications_module_1.NotificationsModule,
             debug_module_1.DebugModule,
