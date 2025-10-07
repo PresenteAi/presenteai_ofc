@@ -161,6 +161,7 @@ __decorate([
 ], GiftTemplatesController.prototype, "findByEventType", null);
 __decorate([
     (0, common_1.Get)('my-templates'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({
         summary: 'List current user gift templates',
         description: 'Returns all gift templates created by the authenticated user'
@@ -196,6 +197,7 @@ __decorate([
 ], GiftTemplatesController.prototype, "findById", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({
         summary: 'Update gift template',
         description: 'Updates a gift template (only the creator can update)'
@@ -219,6 +221,7 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({
         summary: 'Delete gift template',
         description: 'Deletes a gift template (only the creator can delete)'

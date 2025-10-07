@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsOptional, IsNumber, IsEnum, IsPositive, Min, ValidateIf } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { GiftEventStatus } from '../entities/gift-event.entity';
+import { GiftEventStatus } from '../../entities/gift-event.entity';
 
 export class CreateGiftEventDto {
   @ApiProperty({ 

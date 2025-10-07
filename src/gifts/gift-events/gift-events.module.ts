@@ -4,21 +4,24 @@ import { GiftEvent } from '../entities/gift-event.entity';
 import { GiftTemplate } from '../entities/gift-template.entity';
 import { GiftTemplateChanged } from '../entities/gift-template-changed.entity';
 import { Event } from '../../events/events/entities/event.entity';
+import { GiftEventsController } from './controllers/gift-events.controller';
+import { GiftEventsService } from './services/gift-events.service';
+import { GiftEventsRepository } from './repositories/gift-events.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([GiftEvent, GiftTemplate, GiftTemplateChanged, Event]),
   ],
   controllers: [
-    // GiftEventsController - A ser implementado
+    GiftEventsController,
   ],
   providers: [
-    // GiftEventsService - A ser implementado
-    // GiftEventsRepository - A ser implementado
+    GiftEventsService,
+    GiftEventsRepository,
   ],
   exports: [
-    // GiftEventsService - A ser implementado
-    // GiftEventsRepository - A ser implementado
+    GiftEventsService,
+    GiftEventsRepository,
   ],
 })
 export class GiftEventsModule {}

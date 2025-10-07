@@ -13,6 +13,9 @@ const gift_event_entity_1 = require("../entities/gift-event.entity");
 const gift_template_entity_1 = require("../entities/gift-template.entity");
 const gift_template_changed_entity_1 = require("../entities/gift-template-changed.entity");
 const event_entity_1 = require("../../events/events/entities/event.entity");
+const gift_events_controller_1 = require("./controllers/gift-events.controller");
+const gift_events_service_1 = require("./services/gift-events.service");
+const gift_events_repository_1 = require("./repositories/gift-events.repository");
 let GiftEventsModule = class GiftEventsModule {
 };
 exports.GiftEventsModule = GiftEventsModule;
@@ -21,9 +24,17 @@ exports.GiftEventsModule = GiftEventsModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forFeature([gift_event_entity_1.GiftEvent, gift_template_entity_1.GiftTemplate, gift_template_changed_entity_1.GiftTemplateChanged, event_entity_1.Event]),
         ],
-        controllers: [],
-        providers: [],
-        exports: [],
+        controllers: [
+            gift_events_controller_1.GiftEventsController,
+        ],
+        providers: [
+            gift_events_service_1.GiftEventsService,
+            gift_events_repository_1.GiftEventsRepository,
+        ],
+        exports: [
+            gift_events_service_1.GiftEventsService,
+            gift_events_repository_1.GiftEventsRepository,
+        ],
     })
 ], GiftEventsModule);
 //# sourceMappingURL=gift-events.module.js.map

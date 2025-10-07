@@ -1,4 +1,4 @@
-import { GiftEventStatus } from '../entities/gift-event.entity';
+import { GiftEventStatus } from '../../entities/gift-event.entity';
 export declare class CreateGiftEventDto {
     eventId: number;
     giftTemplateId?: number;

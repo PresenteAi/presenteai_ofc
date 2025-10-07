@@ -175,6 +175,7 @@ __decorate([
 ], GiftTemplatesChangedController.prototype, "findByGiftTemplateId", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({
         summary: 'Get a specific customized template',
         description: 'Get details of a specific customized gift template'
@@ -195,6 +196,7 @@ __decorate([
 ], GiftTemplatesChangedController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Get)(':id/combined'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({
         summary: 'Get combined data (base template + customization)',
         description: 'Get merged data showing the final result of base template + customizations'

@@ -157,6 +157,7 @@ export class GiftTemplatesController {
    * Listar templates do usuário atual
    */
   @Get('my-templates')
+  @ApiBearerAuth()
   @ApiOperation({ 
     summary: 'List current user gift templates',
     description: 'Returns all gift templates created by the authenticated user'
@@ -198,6 +199,7 @@ export class GiftTemplatesController {
    * Atualizar template de presente
    */
   @Patch(':id')
+  @ApiBearerAuth()
   @ApiOperation({ 
     summary: 'Update gift template',
     description: 'Updates a gift template (only the creator can update)'
@@ -224,6 +226,7 @@ export class GiftTemplatesController {
    */
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth()
   @ApiOperation({ 
     summary: 'Delete gift template',
     description: 'Deletes a gift template (only the creator can delete)'
