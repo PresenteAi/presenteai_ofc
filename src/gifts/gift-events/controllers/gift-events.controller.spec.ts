@@ -51,8 +51,7 @@ describe('GiftEventsController', () => {
       findOne: jest.fn(),
       update: jest.fn(),
       remove: jest.fn(),
-      updateCollectedValue: jest.fn(),
-      addContribution: jest.fn(),
+
       markAsCompleted: jest.fn(),
       reopenGift: jest.fn(),
       getEventStats: jest.fn(),
@@ -170,43 +169,7 @@ describe('GiftEventsController', () => {
     });
   });
 
-  describe('addContribution', () => {
-    it('should add contribution to gift event', async () => {
-      const contributionAmount = 25.00;
-      const updatedResponse = { 
-        ...mockGiftEventResponse, 
-        collectedValue: 75.00,
-        progressPercentage: 75,
-        remainingValue: 25.00,
-      };
 
-      service.addContribution.mockResolvedValue(updatedResponse);
-
-      const result = await controller.addContribution(1, { amount: contributionAmount });
-
-      expect(service.addContribution).toHaveBeenCalledWith(1, contributionAmount);
-      expect(result).toEqual(updatedResponse);
-    });
-  });
-
-  describe('updateCollectedValue', () => {
-    it('should update collected value directly', async () => {
-      const newCollectedValue = 75.00;
-      const updatedResponse = { 
-        ...mockGiftEventResponse, 
-        collectedValue: newCollectedValue,
-        progressPercentage: 75,
-        remainingValue: 25.00,
-      };
-
-      service.updateCollectedValue.mockResolvedValue(updatedResponse);
-
-      const result = await controller.updateCollectedValue(1, { collectedValue: newCollectedValue });
-
-      expect(service.updateCollectedValue).toHaveBeenCalledWith(1, newCollectedValue);
-      expect(result).toEqual(updatedResponse);
-    });
-  });
 
   describe('markAsCompleted', () => {
     it('should mark gift event as completed', async () => {

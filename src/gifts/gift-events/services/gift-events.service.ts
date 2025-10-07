@@ -148,53 +148,7 @@ export class GiftEventsService {
     await this.giftEventsRepository.remove(id);
   }
 
-  async updateCollectedValue(id: number, collectedValue: number): Promise<GiftEventResponseDto> {
-    if (collectedValue < 0) {
-      throw new BadRequestException('Collected value cannot be negative');
-    }
 
-    const existingGiftEvent = await this.giftEventsRepository.findOne(id);
-
-    if (!existingGiftEvent) {
-      throw new NotFoundException(`Gift event with ID ${id} not found`);
-    }
-
-    if (!existingGiftEvent.canReceiveContributions()) {
-      throw new BadRequestException('This gift cannot receive contributions (it might be completed)');
-    }
-
-    const updatedGiftEvent = await this.giftEventsRepository.updateCollectedValue(id, collectedValue);
-
-    if (!updatedGiftEvent) {
-      throw new NotFoundException(`Gift event with ID ${id} not found after update`);
-    }
-
-    // Auto-completar se necessário
-    await this.checkAndMarkAsCompleted(updatedGiftEvent);
-
-    // Recarregar para ter os dados atualizados
-    const refreshedGiftEvent = await this.giftEventsRepository.findOne(id);
-    return new GiftEventResponseDto(refreshedGiftEvent!);
-  }
-
-  async addContribution(id: number, contributionAmount: number): Promise<GiftEventResponseDto> {
-    if (contributionAmount <= 0) {
-      throw new BadRequestException('Contribution amount must be positive');
-    }
-
-    const existingGiftEvent = await this.giftEventsRepository.findOne(id);
-
-    if (!existingGiftEvent) {
-      throw new NotFoundException(`Gift event with ID ${id} not found`);
-    }
-
-    if (!existingGiftEvent.canReceiveContributions()) {
-      throw new BadRequestException('This gift cannot receive contributions (it might be completed)');
-    }
-
-    const newCollectedValue = Number(existingGiftEvent.collectedValue) + contributionAmount;
-    return await this.updateCollectedValue(id, newCollectedValue);
-  }
 
   async markAsCompleted(id: number): Promise<GiftEventResponseDto> {
     const giftEvent = await this.giftEventsRepository.findOne(id);

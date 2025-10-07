@@ -43,8 +43,7 @@ describe('GiftEventsController (Integration)', () => {
       findOne: jest.fn(),
       update: jest.fn(),
       remove: jest.fn(),
-      addContribution: jest.fn(),
-      updateCollectedValue: jest.fn(),
+
       markAsCompleted: jest.fn(),
       reopenGift: jest.fn(),
       getEventStats: jest.fn(),
@@ -241,57 +240,7 @@ describe('GiftEventsController (Integration)', () => {
     });
   });
 
-  describe('/gift-events/:id/contribution (PATCH)', () => {
-    it('should add contribution to gift event', async () => {
-      const contributionResponse = { 
-        ...mockGiftEventResponse, 
-        collectedValue: 25.00,
-        progressPercentage: 25,
-        remainingValue: 75.00 
-      };
-      
-      giftEventsService.addContribution.mockResolvedValue(contributionResponse);
 
-      const response = await request(app.getHttpServer())
-        .patch('/gift-events/1/contribution')
-        .send({ amount: 25.00 })
-        .expect(200);
-
-      expect(giftEventsService.addContribution).toHaveBeenCalledWith(1, 25.00);
-      expect(response.body).toMatchObject({
-        id: 1,
-        collectedValue: 25,
-        progressPercentage: 25,
-        remainingValue: 75,
-      });
-    });
-  });
-
-  describe('/gift-events/:id/collected-value (PATCH)', () => {
-    it('should update collected value directly', async () => {
-      const updatedResponse = { 
-        ...mockGiftEventResponse, 
-        collectedValue: 150.00,
-        progressPercentage: 75,
-        remainingValue: 50.00 
-      };
-      
-      giftEventsService.updateCollectedValue.mockResolvedValue(updatedResponse);
-
-      const response = await request(app.getHttpServer())
-        .patch('/gift-events/1/collected-value')
-        .send({ collectedValue: 150.00 })
-        .expect(200);
-
-      expect(giftEventsService.updateCollectedValue).toHaveBeenCalledWith(1, 150.00);
-      expect(response.body).toMatchObject({
-        id: 1,
-        collectedValue: 150,
-        progressPercentage: 75,
-        remainingValue: 50,
-      });
-    });
-  });
 
   describe('/gift-events/:id/complete (PATCH)', () => {
     it('should mark gift event as completed', async () => {

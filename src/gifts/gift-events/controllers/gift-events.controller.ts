@@ -36,28 +36,28 @@ export class GiftEventsController {
 
   @Post()
   @ApiOperation({ 
-    summary: 'Criar um novo presente no evento',
-    description: 'Associa um template de presente (base ou personalizado) a um evento específico'
+    summary: 'Create a new gift event',
+    description: 'Associates a gift template (base or customized) with a specific event'
   })
   @ApiResponse({ 
     status: 201, 
-    description: 'Presente criado com sucesso no evento',
+    description: 'Gift event created successfully',
     type: GiftEventResponseDto
   })
-  @ApiResponse({ status: 400, description: 'Dados inválidos fornecidos' })
-  @ApiResponse({ status: 409, description: 'Template de presente já associado ao evento' })
+  @ApiResponse({ status: 400, description: 'Invalid data provided' })
+  @ApiResponse({ status: 409, description: 'Gift template already associated with this event' })
   async create(@Body() createGiftEventDto: CreateGiftEventDto): Promise<GiftEventResponseDto> {
     return await this.giftEventsService.create(createGiftEventDto);
   }
 
   @Get()
   @ApiOperation({ 
-    summary: 'Listar presentes de eventos',
-    description: 'Lista todos os presentes associados a eventos com filtros e paginação'
+    summary: 'List gift events',
+    description: 'Lists all gift events with filters and pagination'
   })
   @ApiResponse({ 
     status: 200, 
-    description: 'Lista de presentes retornada com sucesso',
+    description: 'Gift events list returned successfully',
     type: PaginatedGiftEventResponseDto
   })
   async findAll(@Query() filters: GiftEventFiltersDto): Promise<PaginatedGiftEventResponseDto> {
@@ -66,13 +66,13 @@ export class GiftEventsController {
 
   @Get('event/:eventId')
   @ApiOperation({ 
-    summary: 'Listar presentes de um evento específico',
-    description: 'Retorna todos os presentes associados a um evento específico'
+    summary: 'List gifts for a specific event',
+    description: 'Returns all gifts associated with a specific event'
   })
-  @ApiParam({ name: 'eventId', description: 'ID do evento', type: 'number' })
+  @ApiParam({ name: 'eventId', description: 'Event ID', type: 'number' })
   @ApiResponse({ 
     status: 200, 
-    description: 'Presentes do evento retornados com sucesso',
+    description: 'Event gifts returned successfully',
     type: [GiftEventResponseDto]
   })
   async findByEventId(@Param('eventId', ParseIntPipe) eventId: number): Promise<GiftEventResponseDto[]> {
@@ -81,13 +81,13 @@ export class GiftEventsController {
 
   @Get('event/:eventId/stats')
   @ApiOperation({ 
-    summary: 'Estatísticas dos presentes de um evento',
-    description: 'Retorna estatísticas agregadas dos presentes de um evento'
+    summary: 'Event gift statistics',
+    description: 'Returns aggregated statistics for gifts in an event'
   })
-  @ApiParam({ name: 'eventId', description: 'ID do evento', type: 'number' })
+  @ApiParam({ name: 'eventId', description: 'Event ID', type: 'number' })
   @ApiResponse({ 
     status: 200, 
-    description: 'Estatísticas retornadas com sucesso',
+    description: 'Statistics returned successfully',
     schema: {
       type: 'object',
       properties: {
@@ -106,34 +106,34 @@ export class GiftEventsController {
 
   @Get(':id')
   @ApiOperation({ 
-    summary: 'Buscar presente por ID',
-    description: 'Retorna os detalhes de um presente específico no evento'
+    summary: 'Find gift event by ID',
+    description: 'Returns details of a specific gift event'
   })
-  @ApiParam({ name: 'id', description: 'ID do presente no evento', type: 'number' })
+  @ApiParam({ name: 'id', description: 'Gift event ID', type: 'number' })
   @ApiResponse({ 
     status: 200, 
-    description: 'Presente encontrado com sucesso',
+    description: 'Gift event found successfully',
     type: GiftEventResponseDto
   })
-  @ApiResponse({ status: 404, description: 'Presente não encontrado' })
+  @ApiResponse({ status: 404, description: 'Gift event not found' })
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<GiftEventResponseDto> {
     return await this.giftEventsService.findOne(id);
   }
 
   @Patch(':id')
   @ApiOperation({ 
-    summary: 'Atualizar presente no evento',
-    description: 'Atualiza informações de um presente específico no evento'
+    summary: 'Update gift event',
+    description: 'Updates information of a specific gift event'
   })
-  @ApiParam({ name: 'id', description: 'ID do presente no evento', type: 'number' })
+  @ApiParam({ name: 'id', description: 'Gift event ID', type: 'number' })
   @ApiResponse({ 
     status: 200, 
-    description: 'Presente atualizado com sucesso',
+    description: 'Gift event updated successfully',
     type: GiftEventResponseDto
   })
-  @ApiResponse({ status: 400, description: 'Dados inválidos fornecidos' })
-  @ApiResponse({ status: 404, description: 'Presente não encontrado' })
-  @ApiResponse({ status: 409, description: 'Conflito com template existente' })
+  @ApiResponse({ status: 400, description: 'Invalid data provided' })
+  @ApiResponse({ status: 404, description: 'Gift event not found' })
+  @ApiResponse({ status: 409, description: 'Conflict with existing template' })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateGiftEventDto: UpdateGiftEventDto,
@@ -141,45 +141,6 @@ export class GiftEventsController {
     return await this.giftEventsService.update(id, updateGiftEventDto);
   }
 
-  @Patch(':id/contribution')
-  @ApiOperation({ 
-    summary: 'Adicionar contribuição ao presente',
-    description: 'Adiciona uma contribuição ao valor coletado do presente'
-  })
-  @ApiParam({ name: 'id', description: 'ID do presente no evento', type: 'number' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Contribuição adicionada com sucesso',
-    type: GiftEventResponseDto
-  })
-  @ApiResponse({ status: 400, description: 'Valor de contribuição inválido' })
-  @ApiResponse({ status: 404, description: 'Presente não encontrado' })
-  async addContribution(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: { amount: number },
-  ): Promise<GiftEventResponseDto> {
-    return await this.giftEventsService.addContribution(id, body.amount);
-  }
-
-  @Patch(':id/collected-value')
-  @ApiOperation({ 
-    summary: 'Atualizar valor coletado',
-    description: 'Define diretamente o valor total coletado do presente'
-  })
-  @ApiParam({ name: 'id', description: 'ID do presente no evento', type: 'number' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Valor coletado atualizado com sucesso',
-    type: GiftEventResponseDto
-  })
-  @ApiResponse({ status: 400, description: 'Valor inválido fornecido' })
-  @ApiResponse({ status: 404, description: 'Presente não encontrado' })
-  async updateCollectedValue(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: { collectedValue: number },
-  ): Promise<GiftEventResponseDto> {
-    return await this.giftEventsService.updateCollectedValue(id, body.collectedValue);
-  }
 
   @Patch(':id/complete')
   @HttpCode(HttpStatus.OK)
@@ -218,12 +179,12 @@ export class GiftEventsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ 
-    summary: 'Remover presente do evento',
-    description: 'Remove a associação de um presente com um evento'
+    summary: 'Remove gift event',
+    description: 'Removes the association of a gift with an event'
   })
-  @ApiParam({ name: 'id', description: 'ID do presente no evento', type: 'number' })
-  @ApiResponse({ status: 204, description: 'Presente removido com sucesso' })
-  @ApiResponse({ status: 404, description: 'Presente não encontrado' })
+  @ApiParam({ name: 'id', description: 'Gift event ID', type: 'number' })
+  @ApiResponse({ status: 204, description: 'Gift event removed successfully' })
+  @ApiResponse({ status: 404, description: 'Gift event not found' })
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return await this.giftEventsService.remove(id);
   }

@@ -43,7 +43,7 @@ describe('GiftEventsService', () => {
       findOneByEventAndTemplate: jest.fn(),
       update: jest.fn(),
       remove: jest.fn(),
-      updateCollectedValue: jest.fn(),
+
       getStatsByEvent: jest.fn(),
     };
 
@@ -224,62 +224,7 @@ describe('GiftEventsService', () => {
     });
   });
 
-  describe('updateCollectedValue', () => {
-    it('should update collected value successfully', async () => {
-      const updatedGiftEvent = { ...mockGiftEvent, collectedValue: 75.00 };
-      repository.findOne
-        .mockResolvedValueOnce(mockGiftEvent as GiftEvent)
-        .mockResolvedValueOnce(updatedGiftEvent as GiftEvent);
-      repository.updateCollectedValue.mockResolvedValue(updatedGiftEvent as GiftEvent);
 
-      const result = await service.updateCollectedValue(1, 75.00);
-
-      expect(repository.updateCollectedValue).toHaveBeenCalledWith(1, 75.00);
-      expect(result).toBeInstanceOf(GiftEventResponseDto);
-    });
-
-    it('should throw BadRequestException for negative values', async () => {
-      await expect(service.updateCollectedValue(1, -10)).rejects.toThrow(BadRequestException);
-    });
-
-    it('should throw NotFoundException when gift event not found', async () => {
-      repository.findOne.mockResolvedValue(null);
-
-      await expect(service.updateCollectedValue(999, 50)).rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw BadRequestException when gift cannot receive contributions', async () => {
-      const completedGiftEvent = { 
-        ...mockGiftEvent, 
-        status: GiftEventStatus.COMPLETED,
-        canReceiveContributions: jest.fn().mockReturnValue(false),
-      };
-      repository.findOne.mockResolvedValue(completedGiftEvent as GiftEvent);
-
-      await expect(service.updateCollectedValue(1, 50)).rejects.toThrow(BadRequestException);
-    });
-  });
-
-  describe('addContribution', () => {
-    it('should add contribution successfully', async () => {
-      const updatedGiftEvent = { ...mockGiftEvent, collectedValue: 75.00 };
-      repository.findOne
-        .mockResolvedValueOnce(mockGiftEvent as GiftEvent) // First call
-        .mockResolvedValueOnce(updatedGiftEvent as GiftEvent) // After update
-        .mockResolvedValueOnce(updatedGiftEvent as GiftEvent); // Final refresh
-      repository.updateCollectedValue.mockResolvedValue(updatedGiftEvent as GiftEvent);
-
-      const result = await service.addContribution(1, 25.00);
-
-      expect(repository.updateCollectedValue).toHaveBeenCalledWith(1, 75.00); // 50 + 25
-      expect(result).toBeInstanceOf(GiftEventResponseDto);
-    });
-
-    it('should throw BadRequestException for non-positive contribution', async () => {
-      await expect(service.addContribution(1, 0)).rejects.toThrow(BadRequestException);
-      await expect(service.addContribution(1, -10)).rejects.toThrow(BadRequestException);
-    });
-  });
 
   describe('markAsCompleted', () => {
     it('should mark gift as completed', async () => {

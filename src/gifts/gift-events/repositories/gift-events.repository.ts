@@ -169,10 +169,7 @@ export class GiftEventsRepository {
     await this.giftEventRepository.delete(id);
   }
 
-  async updateCollectedValue(id: number, collectedValue: number): Promise<GiftEvent | null> {
-    await this.giftEventRepository.update(id, { collectedValue });
-    return await this.findOne(id);
-  }
+
 
   async markAsCompleted(id: number): Promise<GiftEvent | null> {
     const giftEvent = await this.findOne(id);

@@ -230,17 +230,7 @@ describe('GiftEventsRepository', () => {
     });
   });
 
-  describe('updateCollectedValue', () => {
-    it('should update collected value', async () => {
-      const updatedGiftEvent = { ...mockGiftEvent, collectedValue: 75.00 };
-      mockRepository.findOne.mockResolvedValue(updatedGiftEvent as GiftEvent);
 
-      const result = await repository.updateCollectedValue(1, 75.00);
-
-      expect(mockRepository.update).toHaveBeenCalledWith(1, { collectedValue: 75.00 });
-      expect(result).toEqual(updatedGiftEvent);
-    });
-  });
 
   describe('markAsCompleted', () => {
     it('should mark gift as completed when collected value >= effective value', async () => {
