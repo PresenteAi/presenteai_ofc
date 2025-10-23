@@ -156,22 +156,6 @@ export class UsersRepository {
     }
 
     /**
-     * Soft delete - desativa o usuário ao invés de deletar
-     */
-    async softDelete(id: number): Promise<void> {
-        if (!id || typeof id !== 'number' || id <= 0) {
-            throw new BadRequestException('Invalid user ID');
-        }
-
-        const user = await this.findById(id);
-        
-        await this.repository.update(id, { 
-            isActive: false,
-            updatedAt: new Date()
-        });
-    }
-
-    /**
      * Atualiza o último login
      */
     async updateLastLogin(id: number): Promise<void> {
@@ -183,13 +167,6 @@ export class UsersRepository {
             lastLoginAt: new Date(),
             updatedAt: new Date()
         });
-    }
-
-    /**
-     * Conta usuários ativos
-     */
-    async countActiveUsers(): Promise<number> {
-        return await this.repository.count({ where: { isActive: true } });
     }
 
     /**

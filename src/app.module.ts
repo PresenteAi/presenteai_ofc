@@ -12,6 +12,7 @@ import { GiftsModule } from './gifts/gifts.module';
 import { ContributionsModule } from './contributions/contributions-module';
 import { PaymentsModule } from './payments/payments.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { WithdrawalsModule } from './withdrawals/withdrawals.module';
 import { InvitesModule } from './invites/invites.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { DebugModule } from './debug/debug.module';
@@ -39,6 +40,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     ContributionsModule,
     PaymentsModule,
     TransactionsModule,
+    WithdrawalsModule,
     InvitesModule,
     NotificationsModule,
     DebugModule,

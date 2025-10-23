@@ -79,20 +79,6 @@ export class GiftTemplatePaginationDto {
   eventType?: EventType;
 
   @ApiProperty({ 
-    example: true,
-    description: 'Filtro por templates públicos',
-    required: false
-  })
-  @IsOptional()
-  @Transform(({ value }) => {
-    if (value === 'true') return true;
-    if (value === 'false') return false;
-    return value;
-  })
-  @IsBoolean()
-  isPublic?: boolean;
-
-  @ApiProperty({ 
     example: 1,
     description: 'Filtro por usuário criador',
     required: false

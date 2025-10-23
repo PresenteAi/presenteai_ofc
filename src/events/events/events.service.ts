@@ -56,10 +56,18 @@ export class EventsService {
      * Busca todos os eventos com paginação
      */
     async findAll(paginationDto: EventPaginationDto): Promise<PaginatedEventsDto> {
+        console.log('=== EVENTS FINDALL DEBUG ===');
+        console.log('Original DTO received:', JSON.stringify(paginationDto, null, 2));
+        
         // Sanitizar parâmetros de paginação
         const sanitizedPagination = this.sanitizePaginationDto(paginationDto);
         
+        console.log('Sanitized pagination:', JSON.stringify(sanitizedPagination, null, 2));
+        
         const { events, total } = await this.repository.findAll(sanitizedPagination);
+        
+        console.log('Events found:', events.length);
+        console.log('Total count:', total);
         
         const totalPages = Math.ceil(total / (sanitizedPagination.limit || 10));
         const hasNext = (sanitizedPagination.page || 1) < totalPages;
@@ -85,6 +93,11 @@ export class EventsService {
         }
 
         const event = await this.repository.findById(id);
+        
+        if (!event) {
+            throw new NotFoundException('Event not found');
+        }
+        
         return this.mapToOutputDto(event);
     }
 
@@ -225,28 +238,6 @@ export class EventsService {
     }
 
     /**
-     * Publica/despublica um evento
-     */
-    async togglePublish(id: number, isPublished: boolean): Promise<EventOutputDto> {
-        if (!id || typeof id !== 'number' || id <= 0) {
-            throw new BadRequestException('Invalid event ID');
-        }
-
-        // Verificar se o evento existe
-        const existingEvent = await this.repository.findById(id);
-
-        const updatedEvent = await this.repository.togglePublish(id, isPublished);
-        return this.mapToOutputDto(updatedEvent);
-    }
-
-    /**
-     * Conta eventos ativos
-     */
-    async countActiveEvents(): Promise<number> {
-        return await this.repository.countActiveEvents();
-    }
-
-    /**
      * Conta eventos por usuário
      */
     async countByUserId(userId: string): Promise<number> {
@@ -255,14 +246,6 @@ export class EventsService {
         }
 
         return await this.repository.countByUserId(Number(userId));
-    }
-
-    /**
-     * Busca eventos próximos do vencimento
-     */
-    async findUpcomingEvents(days: number = 7): Promise<EventOutputDto[]> {
-        const events = await this.repository.findUpcomingEvents(days);
-        return events.map(event => this.mapToOutputDto(event));
     }
 
     // ========== MÉTODOS PRIVADOS DE VALIDAÇÃO ==========
@@ -469,6 +452,34 @@ export class EventsService {
     }
 
     private mapToOutputDto(event: any): EventOutputDto {
+        // Função auxiliar para converter data de forma segura
+        const formatDate = (date: any): string | undefined => {
+            if (!date) return undefined;
+            
+            // Se já é string no formato correto, retorna
+            if (typeof date === 'string') {
+                // Verifica se é uma data válida
+                const dateObj = new Date(date);
+                if (isNaN(dateObj.getTime())) return undefined;
+                return dateObj.toISOString().split('T')[0];
+            }
+            
+            // Se é objeto Date
+            if (date instanceof Date) {
+                if (isNaN(date.getTime())) return undefined;
+                return date.toISOString().split('T')[0];
+            }
+            
+            // Tenta converter qualquer outro tipo
+            try {
+                const dateObj = new Date(date);
+                if (isNaN(dateObj.getTime())) return undefined;
+                return dateObj.toISOString().split('T')[0];
+            } catch {
+                return undefined;
+            }
+        };
+
         return {
             id: event.id,
             userId: event.userId,
@@ -480,8 +491,8 @@ export class EventsService {
             secondaryColor: event.secondaryColor,
             tertiaryColor: event.tertiaryColor,
             fontFamily: event.fontFamily,
-            startDate: event.startDate ? event.startDate.toISOString().split('T')[0] : undefined,
-            endDate: event.endDate ? event.endDate.toISOString().split('T')[0] : undefined,
+            startDate: formatDate(event.startDate),
+            endDate: formatDate(event.endDate),
             publicUrl: event.publicUrl,
             isPublished: event.isPublished,
             isActive: event.isActive,

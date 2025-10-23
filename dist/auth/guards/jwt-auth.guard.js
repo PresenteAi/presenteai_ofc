@@ -13,6 +13,7 @@ exports.JwtAuthGuard = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const core_1 = require("@nestjs/core");
+const public_decorator_1 = require("../decorators/public.decorator");
 let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
     reflector;
     constructor(reflector) {
@@ -27,7 +28,7 @@ let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
         console.log('Request method:', request.method);
         console.log('All headers:', JSON.stringify(request.headers, null, 2));
         console.log('Authorization header:', authHeader ? authHeader.substring(0, 20) + '...' : 'MISSING');
-        const isPublic = this.reflector.getAllAndOverride('isPublic', [
+        const isPublic = this.reflector.getAllAndOverride(public_decorator_1.IS_PUBLIC_KEY, [
             context.getHandler(),
             context.getClass(),
         ]);

@@ -120,16 +120,6 @@ let UsersRepository = class UsersRepository {
             throw new common_1.BadRequestException('Failed to update user');
         }
     }
-    async softDelete(id) {
-        if (!id || typeof id !== 'number' || id <= 0) {
-            throw new common_1.BadRequestException('Invalid user ID');
-        }
-        const user = await this.findById(id);
-        await this.repository.update(id, {
-            isActive: false,
-            updatedAt: new Date()
-        });
-    }
     async updateLastLogin(id) {
         if (!id || typeof id !== 'number' || id <= 0) {
             return;
@@ -138,9 +128,6 @@ let UsersRepository = class UsersRepository {
             lastLoginAt: new Date(),
             updatedAt: new Date()
         });
-    }
-    async countActiveUsers() {
-        return await this.repository.count({ where: { isActive: true } });
     }
     async exists(id) {
         if (!id || typeof id !== 'number' || id <= 0) {

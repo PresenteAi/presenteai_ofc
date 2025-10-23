@@ -31,12 +31,14 @@ export class GiftTemplatesRepository {
       search,
       category,
       eventType,
-      isPublic,
       createdByUserId,
     } = paginationDto;
 
     const queryBuilder = this.repository.createQueryBuilder('giftTemplate')
       .leftJoinAndSelect('giftTemplate.createdByUser', 'user');
+
+    // Always filter by public templates only
+    queryBuilder.andWhere('giftTemplate.isPublic = :isPublic', { isPublic: true });
 
     // Aplicar filtros
     if (search) {
@@ -52,10 +54,6 @@ export class GiftTemplatesRepository {
 
     if (eventType) {
       queryBuilder.andWhere('giftTemplate.eventType = :eventType', { eventType });
-    }
-
-    if (isPublic !== undefined) {
-      queryBuilder.andWhere('giftTemplate.isPublic = :isPublic', { isPublic });
     }
 
     if (createdByUserId) {

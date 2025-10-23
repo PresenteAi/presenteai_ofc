@@ -1,5 +1,5 @@
 import { Injectable, ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
-import { Repository, ILike, FindManyOptions, Between } from 'typeorm';
+import { Repository, ILike, FindManyOptions } from 'typeorm';
 import { Event, EventType } from './entities/event.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EventPaginationDto } from './dto/event-pagination.dto';
@@ -48,7 +48,7 @@ export class EventsRepository {
             eventType,
             userId,
             isPublished,
-            isActive = true
+            isActive
         } = paginationDto;
         
         // Validação de parâmetros
@@ -56,7 +56,38 @@ export class EventsRepository {
         const sortField = validSortFields.includes(sortBy) ? sortBy : 'createdAt';
         const order = sortOrder === 'ASC' ? 'ASC' : 'DESC';
         
-        const where: any = { isActive };
+        const where: any = {};
+        
+        // Só adiciona filtro isActive se foi especificado
+        if (isActive !== undefined && isActive !== null) {
+            // Garantir conversão correta para boolean
+            let activeValue: boolean;
+            if (typeof isActive === 'string') {
+                activeValue = (isActive as string).toLowerCase() === 'true';
+            } else {
+                activeValue = Boolean(isActive);
+            }
+            
+            console.log('isActive conversion:', {
+                original: isActive,
+                originalType: typeof isActive,
+                converted: activeValue,
+                convertedType: typeof activeValue
+            });
+            
+            where.isActive = activeValue;
+        }
+        
+        console.log('Repository - Initial params with types:');
+        console.log('- page:', page, typeof page);
+        console.log('- limit:', limit, typeof limit);
+        console.log('- sortBy:', sortBy, typeof sortBy);
+        console.log('- sortOrder:', sortOrder, typeof sortOrder);
+        console.log('- search:', search, typeof search);
+        console.log('- eventType:', eventType, typeof eventType);
+        console.log('- userId:', userId, typeof userId);
+        console.log('- isPublished:', isPublished, typeof isPublished);
+        console.log('- isActive:', isActive, typeof isActive);
         
         // Filtros
         if (search) {
@@ -71,8 +102,38 @@ export class EventsRepository {
             where.userId = userId;
         }
 
-        if (isPublished !== undefined) {
-            where.isPublished = isPublished;
+        if (isPublished !== undefined && isPublished !== null) {
+            // Garantir conversão correta para boolean
+            let publishedValue: boolean;
+            if (typeof isPublished === 'string') {
+                publishedValue = (isPublished as string).toLowerCase() === 'true';
+            } else {
+                publishedValue = Boolean(isPublished);
+            }
+            
+            console.log('isPublished conversion:', {
+                original: isPublished,
+                originalType: typeof isPublished,
+                converted: publishedValue,
+                convertedType: typeof publishedValue
+            });
+            
+            where.isPublished = publishedValue;
+        }
+        
+        console.log('Repository - Final WHERE clause:', JSON.stringify(where, null, 2));
+        
+        // Debug: Verificar se existe o evento ID 1 no banco sem filtros
+        const debugEvent = await this.repository.findOne({ where: { id: 1 } });
+        console.log('Debug - Event ID 1 exists in DB:', !!debugEvent);
+        if (debugEvent) {
+            console.log('Debug - Event ID 1 data:', {
+                id: debugEvent.id,
+                userId: debugEvent.userId,
+                isPublished: debugEvent.isPublished,
+                isActive: debugEvent.isActive,
+                title: debugEvent.title
+            });
         }
 
         const findOptions: FindManyOptions<Event> = {
@@ -107,7 +168,24 @@ export class EventsRepository {
             }
         };
 
+        console.log('Repository - Final findOptions:', JSON.stringify(findOptions, null, 2));
+        
         const [events, total] = await this.repository.findAndCount(findOptions);
+        
+        console.log('Repository - SQL Result:');
+        console.log('- Events found:', events.length);
+        console.log('- Total count:', total);
+        console.log('- Sample events (first 3):');
+        events.slice(0, 3).forEach((event, index) => {
+            console.log(`  Event ${index + 1}:`, {
+                id: event.id,
+                title: event.title,
+                userId: event.userId,
+                isPublished: event.isPublished,
+                isActive: event.isActive
+            });
+        });
+        
         return { events, total };
     }
 
@@ -275,36 +353,11 @@ export class EventsRepository {
         }
 
         const event = await this.findById(id);
-        
-        await this.repository.update(id, { 
-            isActive: false,
-            updatedAt: new Date()
-        });
-    }
 
-    /**
-     * Publica/despublica um evento
-     */
-    async togglePublish(id: number, isPublished: boolean): Promise<Event> {
-        if (!id || typeof id !== 'number' || id <= 0) {
-            throw new BadRequestException('Invalid event ID');
-        }
-
-        const event = await this.findById(id);
-        
         await this.repository.update(id, {
-            isPublished,
+            isPublished: false,
             updatedAt: new Date()
         });
-
-        return await this.findById(id);
-    }
-
-    /**
-     * Conta eventos ativos
-     */
-    async countActiveEvents(): Promise<number> {
-        return await this.repository.count({ where: { isActive: true } });
     }
 
     /**
@@ -332,34 +385,5 @@ export class EventsRepository {
             where: { id, isActive: true } 
         });
         return count > 0;
-    }
-
-    /**
-     * Busca eventos próximos do vencimento (para notificações)
-     */
-    async findUpcomingEvents(days: number = 7): Promise<Event[]> {
-        const today = new Date();
-        const futureDate = new Date();
-        futureDate.setDate(today.getDate() + days);
-
-        return await this.repository.find({
-            where: {
-                endDate: Between(today, futureDate),
-                isActive: true,
-                isPublished: true
-            },
-            relations: ['user'],
-            select: {
-                id: true,
-                title: true,
-                endDate: true,
-                publicUrl: true,
-                user: {
-                    id: true,
-                    name: true,
-                    email: true
-                }
-            }
-        });
     }
 }

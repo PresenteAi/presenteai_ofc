@@ -37,9 +37,6 @@ let GiftTemplatesChangedService = class GiftTemplatesChangedService {
         }
         return this.giftTemplatesChangedRepository.create(createGiftTemplateChangedDto, userId);
     }
-    async findAll() {
-        return this.giftTemplatesChangedRepository.findAll();
-    }
     async findById(id, userId) {
         const giftTemplateChanged = await this.giftTemplatesChangedRepository.findById(id);
         if (!giftTemplateChanged.isPublic && giftTemplateChanged.createdByUserId !== userId) {
@@ -50,8 +47,8 @@ let GiftTemplatesChangedService = class GiftTemplatesChangedService {
     async findByUserId(userId) {
         return this.giftTemplatesChangedRepository.findByUserId(userId);
     }
-    async findByGiftTemplateId(giftTemplateId) {
-        return this.giftTemplatesChangedRepository.findByGiftTemplateId(giftTemplateId);
+    async findByGiftTemplateId(giftTemplateId, userId) {
+        return this.giftTemplatesChangedRepository.findByGiftTemplateId(giftTemplateId, userId);
     }
     async findPublicChanged() {
         return this.giftTemplatesChangedRepository.findPublicChanged();

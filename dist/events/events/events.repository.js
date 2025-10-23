@@ -41,11 +41,37 @@ let EventsRepository = class EventsRepository {
         }
     }
     async findAll(paginationDto) {
-        const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'DESC', search, eventType, userId, isPublished, isActive = true } = paginationDto;
+        const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'DESC', search, eventType, userId, isPublished, isActive } = paginationDto;
         const validSortFields = ['title', 'eventType', 'startDate', 'createdAt', 'updatedAt'];
         const sortField = validSortFields.includes(sortBy) ? sortBy : 'createdAt';
         const order = sortOrder === 'ASC' ? 'ASC' : 'DESC';
-        const where = { isActive };
+        const where = {};
+        if (isActive !== undefined && isActive !== null) {
+            let activeValue;
+            if (typeof isActive === 'string') {
+                activeValue = isActive.toLowerCase() === 'true';
+            }
+            else {
+                activeValue = Boolean(isActive);
+            }
+            console.log('isActive conversion:', {
+                original: isActive,
+                originalType: typeof isActive,
+                converted: activeValue,
+                convertedType: typeof activeValue
+            });
+            where.isActive = activeValue;
+        }
+        console.log('Repository - Initial params with types:');
+        console.log('- page:', page, typeof page);
+        console.log('- limit:', limit, typeof limit);
+        console.log('- sortBy:', sortBy, typeof sortBy);
+        console.log('- sortOrder:', sortOrder, typeof sortOrder);
+        console.log('- search:', search, typeof search);
+        console.log('- eventType:', eventType, typeof eventType);
+        console.log('- userId:', userId, typeof userId);
+        console.log('- isPublished:', isPublished, typeof isPublished);
+        console.log('- isActive:', isActive, typeof isActive);
         if (search) {
             where.title = (0, typeorm_1.ILike)(`%${search}%`);
         }
@@ -55,8 +81,33 @@ let EventsRepository = class EventsRepository {
         if (userId) {
             where.userId = userId;
         }
-        if (isPublished !== undefined) {
-            where.isPublished = isPublished;
+        if (isPublished !== undefined && isPublished !== null) {
+            let publishedValue;
+            if (typeof isPublished === 'string') {
+                publishedValue = isPublished.toLowerCase() === 'true';
+            }
+            else {
+                publishedValue = Boolean(isPublished);
+            }
+            console.log('isPublished conversion:', {
+                original: isPublished,
+                originalType: typeof isPublished,
+                converted: publishedValue,
+                convertedType: typeof publishedValue
+            });
+            where.isPublished = publishedValue;
+        }
+        console.log('Repository - Final WHERE clause:', JSON.stringify(where, null, 2));
+        const debugEvent = await this.repository.findOne({ where: { id: 1 } });
+        console.log('Debug - Event ID 1 exists in DB:', !!debugEvent);
+        if (debugEvent) {
+            console.log('Debug - Event ID 1 data:', {
+                id: debugEvent.id,
+                userId: debugEvent.userId,
+                isPublished: debugEvent.isPublished,
+                isActive: debugEvent.isActive,
+                title: debugEvent.title
+            });
         }
         const findOptions = {
             where,
@@ -89,7 +140,21 @@ let EventsRepository = class EventsRepository {
                 }
             }
         };
+        console.log('Repository - Final findOptions:', JSON.stringify(findOptions, null, 2));
         const [events, total] = await this.repository.findAndCount(findOptions);
+        console.log('Repository - SQL Result:');
+        console.log('- Events found:', events.length);
+        console.log('- Total count:', total);
+        console.log('- Sample events (first 3):');
+        events.slice(0, 3).forEach((event, index) => {
+            console.log(`  Event ${index + 1}:`, {
+                id: event.id,
+                title: event.title,
+                userId: event.userId,
+                isPublished: event.isPublished,
+                isActive: event.isActive
+            });
+        });
         return { events, total };
     }
     async findById(id) {
@@ -225,23 +290,9 @@ let EventsRepository = class EventsRepository {
         }
         const event = await this.findById(id);
         await this.repository.update(id, {
-            isActive: false,
+            isPublished: false,
             updatedAt: new Date()
         });
-    }
-    async togglePublish(id, isPublished) {
-        if (!id || typeof id !== 'number' || id <= 0) {
-            throw new common_1.BadRequestException('Invalid event ID');
-        }
-        const event = await this.findById(id);
-        await this.repository.update(id, {
-            isPublished,
-            updatedAt: new Date()
-        });
-        return await this.findById(id);
-    }
-    async countActiveEvents() {
-        return await this.repository.count({ where: { isActive: true } });
     }
     async countByUserId(userId) {
         if (!userId || typeof userId !== 'number' || userId <= 0) {
@@ -259,30 +310,6 @@ let EventsRepository = class EventsRepository {
             where: { id, isActive: true }
         });
         return count > 0;
-    }
-    async findUpcomingEvents(days = 7) {
-        const today = new Date();
-        const futureDate = new Date();
-        futureDate.setDate(today.getDate() + days);
-        return await this.repository.find({
-            where: {
-                endDate: (0, typeorm_1.Between)(today, futureDate),
-                isActive: true,
-                isPublished: true
-            },
-            relations: ['user'],
-            select: {
-                id: true,
-                title: true,
-                endDate: true,
-                publicUrl: true,
-                user: {
-                    id: true,
-                    name: true,
-                    email: true
-                }
-            }
-        });
     }
 };
 exports.EventsRepository = EventsRepository;

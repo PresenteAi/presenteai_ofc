@@ -5,10 +5,9 @@ export declare class GiftTemplatesChangedController {
     private readonly giftTemplatesChangedService;
     constructor(giftTemplatesChangedService: GiftTemplatesChangedService);
     create(createGiftTemplateChangedDto: CreateGiftTemplateChangedDto, userId: number): Promise<import("../entities/gift-template-changed.entity").GiftTemplateChanged>;
-    findAll(): Promise<import("../entities/gift-template-changed.entity").GiftTemplateChanged[]>;
     findPublicChanged(): Promise<import("../entities/gift-template-changed.entity").GiftTemplateChanged[]>;
     findMyCustomizations(userId: number): Promise<import("../entities/gift-template-changed.entity").GiftTemplateChanged[]>;
-    findByGiftTemplateId(giftTemplateId: number): Promise<import("../entities/gift-template-changed.entity").GiftTemplateChanged[]>;
+    findByGiftTemplateId(giftTemplateId: number, userId: number): Promise<import("../entities/gift-template-changed.entity").GiftTemplateChanged[]>;
     findOne(id: number, userId?: number): Promise<import("../entities/gift-template-changed.entity").GiftTemplateChanged>;
     getCombinedData(id: number, userId?: number): Promise<{
         id: number;

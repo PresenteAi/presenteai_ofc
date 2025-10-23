@@ -11,7 +11,8 @@ import {
   HttpStatus,
   ParseIntPipe,
   Patch,
-  ForbiddenException
+  ForbiddenException,
+  Req
 } from '@nestjs/common';
 import { UsersService } from '../../users/users/users.service';
 import { EventsService } from './events.service';
@@ -109,11 +110,42 @@ export class EventsController {
   @ApiQuery({ name: 'isActive', required: false, description: 'Filter by active status' })
   async findAll(
     @Query() paginationDto: EventPaginationDto,
-    @UserId() userId: number
+    @UserId() currentUserId: number,
+    @Req() req: any
   ): Promise<PaginatedEventsDto> {
-    // Force the userId filter to show only user's own events
-    paginationDto.userId = userId;
-    return this.service.findAll(paginationDto);
+    console.log('=== RAW QUERY DEBUG ===');
+    console.log('Raw query string:', req.url);
+    console.log('Raw query object:', req.query);
+    console.log('Parsed DTO:', JSON.stringify(paginationDto, null, 2));
+    
+    // FORÇA A CONVERSÃO MANUAL DOS PARÂMETROS
+    const rawQuery = req.query;
+    
+    // Reconstruir DTO manualmente com conversões corretas
+    const fixedDto: any = {
+      page: parseInt(rawQuery.page) || 1,
+      limit: parseInt(rawQuery.limit) || 10,
+      sortBy: rawQuery.sortBy || 'createdAt',
+      sortOrder: rawQuery.sortOrder || 'DESC',
+      search: rawQuery.search,
+      eventType: rawQuery.eventType,
+      userId: rawQuery.userId ? parseInt(rawQuery.userId) : currentUserId,
+    };
+    
+    // Conversão FORÇADA dos booleans
+    if (rawQuery.isPublished !== undefined) {
+      fixedDto.isPublished = rawQuery.isPublished === 'true';
+      console.log('isPublished FORCED conversion:', rawQuery.isPublished, '->', fixedDto.isPublished);
+    }
+    
+    if (rawQuery.isActive !== undefined) {
+      fixedDto.isActive = rawQuery.isActive === 'true';
+      console.log('isActive FORCED conversion:', rawQuery.isActive, '->', fixedDto.isActive);
+    }
+    
+    console.log('FINAL DTO after manual conversion:', JSON.stringify(fixedDto, null, 2));
+    
+    return this.service.findAll(fixedDto as EventPaginationDto);
   }
 
   /**
@@ -219,7 +251,7 @@ export class EventsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ 
-    summary: 'Remove event',
+    summary: 'Unpublish (deactivate) event',
     description: 'Deactivates an event (soft delete). The event will be marked as inactive instead of being permanently deleted. Users can only delete their own events.'
   })
   @ApiParam({ name: 'id', description: 'Event UUID' })
@@ -246,113 +278,5 @@ export class EventsController {
       throw new ForbiddenException('You can only delete your own events');
     }
     return this.service.remove(id);
-  }
-
-  /**
-   * Publicar/despublicar evento
-   */
-  @Patch(':id/publish')
-  @ApiOperation({ 
-    summary: 'Toggle event publish status',
-    description: 'Publishes or unpublishes an event. Users can only modify their own events.'
-  })
-  @ApiParam({ name: 'id', description: 'Event UUID' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Event publish status updated successfully', 
-    type: EventOutputDto 
-  })
-  @ApiBadRequestResponse({ 
-    description: 'Invalid UUID format or request body' 
-  })
-  @ApiNotFoundResponse({ 
-    description: 'Event not found' 
-  })
-  @ApiForbiddenResponse({ 
-    description: 'You can only modify your own events' 
-  })
-  async togglePublish(
-    @Param('id', ParseIntPipe) id: number,
-    @Body('isPublished') isPublished: boolean,
-    @UserId() userId: number
-  ): Promise<EventOutputDto> {
-    if (typeof isPublished !== 'boolean') {
-      throw new Error('isPublished must be a boolean');
-    }
-    // Check if event belongs to user before updating
-    const event = await this.service.findById(id);
-    if (event.userId !== userId) {
-      throw new ForbiddenException('You can only modify your own events');
-    }
-    return this.service.togglePublish(id, isPublished);
-  }
-
-  /**
-   * Contar eventos ativos
-   */
-  @Public()
-  @Get('stats/count')
-  @ApiOperation({ 
-    summary: 'Count active events',
-    description: 'Returns the total number of active events in the system'
-  })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Event count retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        count: { type: 'number', example: 75 }
-      }
-    }
-  })
-  async countActiveEvents(): Promise<{ count: number }> {
-    const count = await this.service.countActiveEvents();
-    return { count };
-  }
-
-  // Removed countByUserId method - users can get their count via findAll pagination
-
-  /**
-   * Buscar eventos próximos do vencimento
-   */
-  @Public()
-  @Get('stats/upcoming')
-  @ApiOperation({ 
-    summary: 'Get upcoming events',
-    description: 'Returns events that are ending soon (within specified number of days)'
-  })
-  @ApiQuery({ name: 'days', required: false, description: 'Number of days to look ahead (default: 7)' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Upcoming events retrieved successfully',
-    type: [EventOutputDto]
-  })
-  async findUpcomingEvents(
-    @Query('days') days?: number
-  ): Promise<EventOutputDto[]> {
-    const daysToCheck = days && days > 0 && days <= 30 ? days : 7;
-    return this.service.findUpcomingEvents(daysToCheck);
-  }
-
-  /**
-   * Endpoint de teste - público para testar se API está funcionando
-   */
-  @Get('test')
-  @Public()
-  @ApiOperation({ 
-    summary: 'Test endpoint (public)',
-    description: 'Public endpoint to test if API is working'
-  })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'API is working' 
-  })
-  async test(): Promise<any> {
-    return {
-      success: true,
-      message: 'Events API is working!',
-      timestamp: new Date().toISOString()
-    };
   }
 }

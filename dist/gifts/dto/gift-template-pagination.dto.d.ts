@@ -7,6 +7,5 @@ export declare class GiftTemplatePaginationDto {
     search?: string;
     category?: string;
     eventType?: EventType;
-    isPublic?: boolean;
     createdByUserId?: number;
 }

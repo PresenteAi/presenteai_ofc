@@ -83,52 +83,50 @@ export class UsersService {
     }
 
     /**
-     * Atualiza um usuário
+     * Atualiza um usuário (apenas nome)
      */
     async update(id: number, updateDto: UpdateUserDto): Promise<UserOutputDto> {
         if (!id || typeof id !== 'number' || id <= 0) {
             throw new BadRequestException('Invalid user ID');
         }
 
-        // Validar dados de atualização
-        await this.validateUpdateUserDto(updateDto);
+        // Verificar se o usuário existe
+        const existingUser = await this.repository.findById(id);
+        if (!existingUser) {
+            throw new NotFoundException('User not found');
+        }
 
+        // Preparar dados para atualização
         const updateData: any = {};
 
-        if (updateDto.name !== undefined) {
-            updateData.name = updateDto.name.trim();
+        // Validação robusta para o nome
+        if (updateDto && updateDto.name !== undefined && updateDto.name !== null) {
+            const nameValue = String(updateDto.name).trim();
+            
+            if (nameValue.length === 0) {
+                throw new BadRequestException('Name cannot be empty');
+            }
+            
+            if (nameValue.length < 2) {
+                throw new BadRequestException('Name must be at least 2 characters long');
+            }
+            
+            if (nameValue.length > 300) {
+                throw new BadRequestException('Name must not exceed 300 characters');
+            }
+            
+            updateData.name = nameValue;
+        } else {
+            // Se não tem nome no DTO, não há o que atualizar
+            throw new BadRequestException('Name is required for update');
         }
 
-        if (updateDto.email !== undefined) {
-            updateData.email = updateDto.email.toLowerCase().trim();
+        try {
+            const updatedUser = await this.repository.update(id, updateData);
+            return this.mapToOutputDto(updatedUser);
+        } catch (error) {
+            throw new BadRequestException('Failed to update user');
         }
-
-        if (updateDto.password !== undefined) {
-            updateData.passwordHash = await bcrypt.hash(updateDto.password, this.SALT_ROUNDS);
-        }
-
-        if (updateDto.isActive !== undefined) {
-            updateData.isActive = updateDto.isActive;
-        }
-
-        if (updateDto.indicatedById !== undefined) {
-            updateData.indicatedById = updateDto.indicatedById;
-            updateData.isIndicated = !!updateDto.indicatedById;
-        }
-
-        const updatedUser = await this.repository.update(id, updateData);
-        return this.mapToOutputDto(updatedUser);
-    }
-
-    /**
-     * Remove usuário (soft delete)
-     */
-    async remove(id: number): Promise<void> {
-        if (!id || typeof id !== 'number' || id <= 0) {
-            throw new BadRequestException('Invalid user ID');
-        }
-
-        await this.repository.softDelete(id);
     }
 
     /**
@@ -176,13 +174,6 @@ export class UsersService {
         await this.updateLastLogin(user.id);
 
         return this.mapToOutputDto(user);
-    }
-
-    /**
-     * Conta usuários ativos
-     */
-    async countActiveUsers(): Promise<number> {
-        return await this.repository.countActiveUsers();
     }
 
     // ========== MÉTODOS PRIVADOS DE VALIDAÇÃO ==========
@@ -240,40 +231,6 @@ export class UsersService {
                 errors.push('Name must be at least 2 characters long');
             } else if (dto.name.trim().length > 300) {
                 errors.push('Name must not exceed 300 characters');
-            }
-        }
-
-        // Validar email se fornecido
-        if (dto.email !== undefined) {
-            if (typeof dto.email !== 'string') {
-                errors.push('Email must be a string');
-            } else if (!this.EMAIL_REGEX.test(dto.email.trim())) {
-                errors.push('Please provide a valid email address');
-            } else if (dto.email.trim().length > 150) {
-                errors.push('Email must not exceed 150 characters');
-            }
-        }
-
-        // Validar senha se fornecida
-        if (dto.password !== undefined) {
-            if (typeof dto.password !== 'string') {
-                errors.push('Password must be a string');
-            } else if (!this.PASSWORD_REGEX.test(dto.password)) {
-                errors.push('Password must contain at least 8 characters, one uppercase, one lowercase, one number and one special character');
-            } else if (dto.password.length > 255) {
-                errors.push('Password must not exceed 255 characters');
-            }
-        }
-
-        // Validar isActive se fornecido
-        if (dto.isActive !== undefined && typeof dto.isActive !== 'boolean') {
-            errors.push('isActive must be a boolean');
-        }
-
-        // Validar indicatedById se fornecido
-        if (dto.indicatedById !== undefined && dto.indicatedById !== null) {
-            if (typeof dto.indicatedById !== 'number' || dto.indicatedById <= 0) {
-                errors.push('IndicatedById must be a valid positive number');
             }
         }
 

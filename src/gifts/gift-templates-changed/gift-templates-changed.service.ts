@@ -40,10 +40,6 @@ export class GiftTemplatesChangedService {
     return this.giftTemplatesChangedRepository.create(createGiftTemplateChangedDto, userId);
   }
 
-  async findAll(): Promise<GiftTemplateChanged[]> {
-    return this.giftTemplatesChangedRepository.findAll();
-  }
-
   async findById(id: number, userId?: number): Promise<GiftTemplateChanged> {
     const giftTemplateChanged = await this.giftTemplatesChangedRepository.findById(id);
 
@@ -59,8 +55,8 @@ export class GiftTemplatesChangedService {
     return this.giftTemplatesChangedRepository.findByUserId(userId);
   }
 
-  async findByGiftTemplateId(giftTemplateId: number): Promise<GiftTemplateChanged[]> {
-    return this.giftTemplatesChangedRepository.findByGiftTemplateId(giftTemplateId);
+  async findByGiftTemplateId(giftTemplateId: number, userId: number): Promise<GiftTemplateChanged[]> {
+    return this.giftTemplatesChangedRepository.findByGiftTemplateId(giftTemplateId, userId);
   }
 
   async findPublicChanged(): Promise<GiftTemplateChanged[]> {

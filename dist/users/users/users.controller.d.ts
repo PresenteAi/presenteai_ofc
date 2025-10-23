@@ -10,10 +10,6 @@ export declare class UsersController {
     create(dto: CreateUserDto): Promise<UserOutputDto>;
     findAll(paginationDto: PaginationDto): Promise<PaginatedUsersDto>;
     findById(id: number): Promise<UserOutputDto>;
-    update(id: number, updateDto: UpdateUserDto): Promise<UserOutputDto>;
-    remove(id: number): Promise<void>;
+    update(id: number, updateDto: UpdateUserDto, request: any): Promise<UserOutputDto>;
     findByEmail(email: string): Promise<UserOutputDto | null>;
-    countActiveUsers(): Promise<{
-        count: number;
-    }>;
 }

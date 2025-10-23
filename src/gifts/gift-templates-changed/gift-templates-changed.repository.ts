@@ -21,13 +21,6 @@ export class GiftTemplatesChangedRepository {
     return await this.repository.save(giftTemplateChanged);
   }
 
-  async findAll(): Promise<GiftTemplateChanged[]> {
-    return await this.repository.find({
-      relations: ['giftTemplate', 'createdByUser'],
-      order: { createdAt: 'DESC' },
-    });
-  }
-
   async findById(id: number): Promise<GiftTemplateChanged> {
     if (!id || typeof id !== 'number' || id <= 0) {
       throw new BadRequestException('Invalid gift template changed ID');
@@ -57,13 +50,18 @@ export class GiftTemplatesChangedRepository {
     });
   }
 
-  async findByGiftTemplateId(giftTemplateId: number): Promise<GiftTemplateChanged[]> {
+  async findByGiftTemplateId(giftTemplateId: number, userId: number): Promise<GiftTemplateChanged[]> {
     if (!giftTemplateId || typeof giftTemplateId !== 'number' || giftTemplateId <= 0) {
       return [];
     }
 
     return await this.repository.find({
-      where: { giftTemplateId },
+      where: [
+        // Show public customizations
+        { giftTemplateId, isPublic: true },
+        // Show user's own customizations (both public and private)
+        { giftTemplateId, createdByUserId: userId }
+      ],
       relations: ['giftTemplate', 'createdByUser'],
       order: { createdAt: 'DESC' },
     });

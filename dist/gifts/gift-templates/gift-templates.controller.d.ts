@@ -14,7 +14,7 @@ export declare class GiftTemplatesController {
     findByCategory(category: string): Promise<GiftTemplateOutputDto[]>;
     findByEventType(eventType: EventType): Promise<GiftTemplateOutputDto[]>;
     findMyTemplates(userId: number): Promise<GiftTemplateOutputDto[]>;
-    findById(id: number): Promise<GiftTemplateOutputDto>;
+    findById(id: number, userId: number): Promise<GiftTemplateOutputDto>;
     update(id: number, dto: UpdateGiftTemplateDto, userId: number): Promise<GiftTemplateOutputDto>;
     remove(id: number, userId: number): Promise<void>;
 }

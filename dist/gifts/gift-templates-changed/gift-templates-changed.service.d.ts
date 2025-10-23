@@ -9,10 +9,9 @@ export declare class GiftTemplatesChangedService {
     private readonly giftTemplateRepository;
     constructor(giftTemplatesChangedRepository: GiftTemplatesChangedRepository, giftTemplateRepository: Repository<GiftTemplate>);
     create(createGiftTemplateChangedDto: CreateGiftTemplateChangedDto, userId: number): Promise<GiftTemplateChanged>;
-    findAll(): Promise<GiftTemplateChanged[]>;
     findById(id: number, userId?: number): Promise<GiftTemplateChanged>;
     findByUserId(userId: number): Promise<GiftTemplateChanged[]>;
-    findByGiftTemplateId(giftTemplateId: number): Promise<GiftTemplateChanged[]>;
+    findByGiftTemplateId(giftTemplateId: number, userId: number): Promise<GiftTemplateChanged[]>;
     findPublicChanged(): Promise<GiftTemplateChanged[]>;
     update(id: number, updateGiftTemplateChangedDto: UpdateGiftTemplateChangedDto, userId: number): Promise<GiftTemplateChanged>;
     remove(id: number, userId: number): Promise<void>;

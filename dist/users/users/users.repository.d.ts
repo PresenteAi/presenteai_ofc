@@ -13,8 +13,6 @@ export declare class UsersRepository {
     findByEmail(email: string): Promise<User | null>;
     findByEmailWithPassword(email: string): Promise<User | null>;
     update(id: number, updateData: Partial<User>): Promise<User>;
-    softDelete(id: number): Promise<void>;
     updateLastLogin(id: number): Promise<void>;
-    countActiveUsers(): Promise<number>;
     exists(id: number): Promise<boolean>;
 }

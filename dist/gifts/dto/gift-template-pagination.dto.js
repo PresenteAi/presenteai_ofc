@@ -22,7 +22,6 @@ class GiftTemplatePaginationDto {
     search;
     category;
     eventType;
-    isPublic;
     createdByUserId;
 }
 exports.GiftTemplatePaginationDto = GiftTemplatePaginationDto;
@@ -107,23 +106,6 @@ __decorate([
     (0, class_validator_1.IsEnum)(gift_template_entity_1.EventType),
     __metadata("design:type", String)
 ], GiftTemplatePaginationDto.prototype, "eventType", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        example: true,
-        description: 'Filtro por templates públicos',
-        required: false
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Transform)(({ value }) => {
-        if (value === 'true')
-            return true;
-        if (value === 'false')
-            return false;
-        return value;
-    }),
-    (0, class_validator_1.IsBoolean)(),
-    __metadata("design:type", Boolean)
-], GiftTemplatePaginationDto.prototype, "isPublic", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         example: 1,

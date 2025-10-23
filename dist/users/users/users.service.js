@@ -103,32 +103,34 @@ let UsersService = class UsersService {
         if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid user ID');
         }
-        await this.validateUpdateUserDto(updateDto);
+        const existingUser = await this.repository.findById(id);
+        if (!existingUser) {
+            throw new common_1.NotFoundException('User not found');
+        }
         const updateData = {};
-        if (updateDto.name !== undefined) {
-            updateData.name = updateDto.name.trim();
+        if (updateDto && updateDto.name !== undefined && updateDto.name !== null) {
+            const nameValue = String(updateDto.name).trim();
+            if (nameValue.length === 0) {
+                throw new common_1.BadRequestException('Name cannot be empty');
+            }
+            if (nameValue.length < 2) {
+                throw new common_1.BadRequestException('Name must be at least 2 characters long');
+            }
+            if (nameValue.length > 300) {
+                throw new common_1.BadRequestException('Name must not exceed 300 characters');
+            }
+            updateData.name = nameValue;
         }
-        if (updateDto.email !== undefined) {
-            updateData.email = updateDto.email.toLowerCase().trim();
+        else {
+            throw new common_1.BadRequestException('Name is required for update');
         }
-        if (updateDto.password !== undefined) {
-            updateData.passwordHash = await bcrypt.hash(updateDto.password, this.SALT_ROUNDS);
+        try {
+            const updatedUser = await this.repository.update(id, updateData);
+            return this.mapToOutputDto(updatedUser);
         }
-        if (updateDto.isActive !== undefined) {
-            updateData.isActive = updateDto.isActive;
+        catch (error) {
+            throw new common_1.BadRequestException('Failed to update user');
         }
-        if (updateDto.indicatedById !== undefined) {
-            updateData.indicatedById = updateDto.indicatedById;
-            updateData.isIndicated = !!updateDto.indicatedById;
-        }
-        const updatedUser = await this.repository.update(id, updateData);
-        return this.mapToOutputDto(updatedUser);
-    }
-    async remove(id) {
-        if (!id || typeof id !== 'number' || id <= 0) {
-            throw new common_1.BadRequestException('Invalid user ID');
-        }
-        await this.repository.softDelete(id);
     }
     async findByEmail(email) {
         if (!email || typeof email !== 'string') {
@@ -157,9 +159,6 @@ let UsersService = class UsersService {
         }
         await this.updateLastLogin(user.id);
         return this.mapToOutputDto(user);
-    }
-    async countActiveUsers() {
-        return await this.repository.countActiveUsers();
     }
     async validateCreateUserDto(dto) {
         const errors = [];
@@ -210,36 +209,6 @@ let UsersService = class UsersService {
             }
             else if (dto.name.trim().length > 300) {
                 errors.push('Name must not exceed 300 characters');
-            }
-        }
-        if (dto.email !== undefined) {
-            if (typeof dto.email !== 'string') {
-                errors.push('Email must be a string');
-            }
-            else if (!this.EMAIL_REGEX.test(dto.email.trim())) {
-                errors.push('Please provide a valid email address');
-            }
-            else if (dto.email.trim().length > 150) {
-                errors.push('Email must not exceed 150 characters');
-            }
-        }
-        if (dto.password !== undefined) {
-            if (typeof dto.password !== 'string') {
-                errors.push('Password must be a string');
-            }
-            else if (!this.PASSWORD_REGEX.test(dto.password)) {
-                errors.push('Password must contain at least 8 characters, one uppercase, one lowercase, one number and one special character');
-            }
-            else if (dto.password.length > 255) {
-                errors.push('Password must not exceed 255 characters');
-            }
-        }
-        if (dto.isActive !== undefined && typeof dto.isActive !== 'boolean') {
-            errors.push('isActive must be a boolean');
-        }
-        if (dto.indicatedById !== undefined && dto.indicatedById !== null) {
-            if (typeof dto.indicatedById !== 'number' || dto.indicatedById <= 0) {
-                errors.push('IndicatedById must be a valid positive number');
             }
         }
         if (errors.length > 0) {

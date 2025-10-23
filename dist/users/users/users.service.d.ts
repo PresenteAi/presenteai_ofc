@@ -14,11 +14,9 @@ export declare class UsersService {
     findAll(paginationDto: PaginationDto): Promise<PaginatedUsersDto>;
     findById(id: number): Promise<UserOutputDto>;
     update(id: number, updateDto: UpdateUserDto): Promise<UserOutputDto>;
-    remove(id: number): Promise<void>;
     findByEmail(email: string): Promise<UserOutputDto | null>;
     updateLastLogin(id: number): Promise<void>;
     validatePassword(email: string, password: string): Promise<UserOutputDto | null>;
-    countActiveUsers(): Promise<number>;
     private validateCreateUserDto;
     private validateUpdateUserDto;
     private sanitizePaginationDto;

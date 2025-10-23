@@ -30,9 +30,10 @@ let GiftTemplatesRepository = class GiftTemplatesRepository {
         return await this.repository.save(giftTemplate);
     }
     async findAll(paginationDto) {
-        const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'DESC', search, category, eventType, isPublic, createdByUserId, } = paginationDto;
+        const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'DESC', search, category, eventType, createdByUserId, } = paginationDto;
         const queryBuilder = this.repository.createQueryBuilder('giftTemplate')
             .leftJoinAndSelect('giftTemplate.createdByUser', 'user');
+        queryBuilder.andWhere('giftTemplate.isPublic = :isPublic', { isPublic: true });
         if (search) {
             queryBuilder.andWhere('(giftTemplate.title LIKE :search OR giftTemplate.description LIKE :search)', { search: `%${search}%` });
         }
@@ -41,9 +42,6 @@ let GiftTemplatesRepository = class GiftTemplatesRepository {
         }
         if (eventType) {
             queryBuilder.andWhere('giftTemplate.eventType = :eventType', { eventType });
-        }
-        if (isPublic !== undefined) {
-            queryBuilder.andWhere('giftTemplate.isPublic = :isPublic', { isPublic });
         }
         if (createdByUserId) {
             queryBuilder.andWhere('giftTemplate.createdByUserId = :createdByUserId', { createdByUserId });

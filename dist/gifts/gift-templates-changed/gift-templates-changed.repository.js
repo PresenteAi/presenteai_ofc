@@ -29,12 +29,6 @@ let GiftTemplatesChangedRepository = class GiftTemplatesChangedRepository {
         });
         return await this.repository.save(giftTemplateChanged);
     }
-    async findAll() {
-        return await this.repository.find({
-            relations: ['giftTemplate', 'createdByUser'],
-            order: { createdAt: 'DESC' },
-        });
-    }
     async findById(id) {
         if (!id || typeof id !== 'number' || id <= 0) {
             throw new common_1.BadRequestException('Invalid gift template changed ID');
@@ -58,12 +52,15 @@ let GiftTemplatesChangedRepository = class GiftTemplatesChangedRepository {
             order: { createdAt: 'DESC' },
         });
     }
-    async findByGiftTemplateId(giftTemplateId) {
+    async findByGiftTemplateId(giftTemplateId, userId) {
         if (!giftTemplateId || typeof giftTemplateId !== 'number' || giftTemplateId <= 0) {
             return [];
         }
         return await this.repository.find({
-            where: { giftTemplateId },
+            where: [
+                { giftTemplateId, isPublic: true },
+                { giftTemplateId, createdByUserId: userId }
+            ],
             relations: ['giftTemplate', 'createdByUser'],
             order: { createdAt: 'DESC' },
         });

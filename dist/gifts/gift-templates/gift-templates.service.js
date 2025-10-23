@@ -31,8 +31,11 @@ let GiftTemplatesService = class GiftTemplatesService {
             data: result.data.map(template => this.mapToOutputDto(template)),
         };
     }
-    async findById(id) {
+    async findById(id, userId) {
         const giftTemplate = await this.repository.findById(id);
+        if (!giftTemplate.isPublic && giftTemplate.createdByUserId !== userId) {
+            throw new common_1.ForbiddenException('You can only access public templates or your own private templates');
+        }
         return this.mapToOutputDto(giftTemplate);
     }
     async findByUserId(userId) {
@@ -146,7 +149,6 @@ let GiftTemplatesService = class GiftTemplatesService {
             category: dto.category ? dto.category.trim() : undefined,
             eventType: dto.eventType && Object.values(gift_template_entity_1.EventType).includes(dto.eventType)
                 ? dto.eventType : undefined,
-            isPublic: dto.isPublic,
             createdByUserId: dto.createdByUserId ? dto.createdByUserId : undefined,
         };
     }

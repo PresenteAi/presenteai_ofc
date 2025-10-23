@@ -83,7 +83,6 @@ export class GiftTemplatesController {
   @ApiQuery({ name: 'search', required: false, description: 'Search term for title or description' })
   @ApiQuery({ name: 'category', required: false, description: 'Filter by category' })
   @ApiQuery({ name: 'eventType', required: false, description: 'Filter by event type', enum: EventType })
-  @ApiQuery({ name: 'isPublic', required: false, description: 'Filter by public templates' })
   @ApiQuery({ name: 'createdByUserId', required: false, description: 'Filter by creator user ID' })
   async findAll(
     @Query() paginationDto: GiftTemplatePaginationDto
@@ -177,10 +176,9 @@ export class GiftTemplatesController {
    * Buscar template por ID
    */
   @Get(':id')
-  @Public()
   @ApiOperation({ 
     summary: 'Get gift template by ID',
-    description: 'Returns a specific gift template by its ID'
+    description: 'Returns a specific gift template by its ID. Private templates can only be accessed by their creators.'
   })
   @ApiResponse({ 
     status: 200, 
@@ -188,11 +186,13 @@ export class GiftTemplatesController {
     type: GiftTemplateOutputDto 
   })
   @ApiNotFoundResponse({ description: 'Gift template not found' })
+  @ApiForbiddenResponse({ description: 'Access denied - You can only access public templates or your own private templates' })
   @ApiParam({ name: 'id', description: 'Gift template ID' })
   async findById(
-    @Param('id', ParseIntPipe) id: number
+    @Param('id', ParseIntPipe) id: number,
+    @UserId() userId: number
   ): Promise<GiftTemplateOutputDto> {
-    return this.giftTemplatesService.findById(id);
+    return this.giftTemplatesService.findById(id, userId);
   }
 
   /**

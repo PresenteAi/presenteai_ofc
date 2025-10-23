@@ -115,18 +115,4 @@ describe('UsersRepository', () => {
     });
   });
 
-  describe('softDelete', () => {
-    it('should deactivate user successfully', async () => {
-      mockRepository.findOne = jest.fn().mockResolvedValue(mockUser);
-
-      await repository.softDelete(1);
-
-      expect(mockRepository.update).toHaveBeenCalledWith(
-        1,
-        expect.objectContaining({
-          isActive: false,
-        })
-      );
-    });
-  });
 });

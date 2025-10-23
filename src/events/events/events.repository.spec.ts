@@ -150,28 +150,4 @@ describe('EventsRepository', () => {
       );
     });
   });
-
-  describe('togglePublish', () => {
-    it('should toggle publish status successfully', async () => {
-      mockRepository.findOne = jest.fn().mockResolvedValue(mockEvent);
-
-      await repository.togglePublish(1, false);
-
-      expect(mockRepository.update).toHaveBeenCalledWith(
-        1,
-        expect.objectContaining({
-          isPublished: false,
-        })
-      );
-    });
-  });
-
-  describe('countActiveEvents', () => {
-    it('should return count of active events', async () => {
-      const result = await repository.countActiveEvents();
-
-      expect(result).toBe(1);
-      expect(mockRepository.count).toHaveBeenCalledWith({ where: { isActive: true } });
-    });
-  });
 });

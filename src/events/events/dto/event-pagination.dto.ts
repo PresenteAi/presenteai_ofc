@@ -89,7 +89,7 @@ export class EventPaginationDto {
   })
   @IsOptional()
   @Type(() => Boolean)
-  @IsBoolean()
+  @IsBoolean({ message: 'isPublished must be a boolean value' })
   isPublished?: boolean;
 
   @ApiProperty({ 
@@ -99,6 +99,6 @@ export class EventPaginationDto {
   })
   @IsOptional()
   @Type(() => Boolean)
-  @IsBoolean()
+  @IsBoolean({ message: 'isActive must be a boolean value' })
   isActive?: boolean;
 }

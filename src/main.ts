@@ -15,13 +15,21 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // Middleware para garantir JSON parsing
+  app.use((req, res, next) => {
+    if (req.headers['content-type'] && req.headers['content-type'].includes('text/plain')) {
+      req.headers['content-type'] = 'application/json';
+    }
+    next();
+  });
+
   // Configure interceptors globalmente
   app.useGlobalInterceptors(new LoggingInterceptor());
 
   // Configure ValidationPipe globalmente
   app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
+    whitelist: false, // Temporariamente desabilitado para debug
+    forbidNonWhitelisted: false, // Temporariamente desabilitado para debug
     transform: true,
     transformOptions: {
       enableImplicitConversion: true,
@@ -37,7 +45,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  const port = process.env.PORT ?? 3000;
+  const port = process.env.PORT ?? 8080;
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 Application is running on: http://localhost:${port}`);
   console.log(`📚 Swagger documentation: http://localhost:${port}/api`);

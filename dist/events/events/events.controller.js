@@ -45,9 +45,31 @@ let EventsController = class EventsController {
             throw error;
         }
     }
-    async findAll(paginationDto, userId) {
-        paginationDto.userId = userId;
-        return this.service.findAll(paginationDto);
+    async findAll(paginationDto, currentUserId, req) {
+        console.log('=== RAW QUERY DEBUG ===');
+        console.log('Raw query string:', req.url);
+        console.log('Raw query object:', req.query);
+        console.log('Parsed DTO:', JSON.stringify(paginationDto, null, 2));
+        const rawQuery = req.query;
+        const fixedDto = {
+            page: parseInt(rawQuery.page) || 1,
+            limit: parseInt(rawQuery.limit) || 10,
+            sortBy: rawQuery.sortBy || 'createdAt',
+            sortOrder: rawQuery.sortOrder || 'DESC',
+            search: rawQuery.search,
+            eventType: rawQuery.eventType,
+            userId: rawQuery.userId ? parseInt(rawQuery.userId) : currentUserId,
+        };
+        if (rawQuery.isPublished !== undefined) {
+            fixedDto.isPublished = rawQuery.isPublished === 'true';
+            console.log('isPublished FORCED conversion:', rawQuery.isPublished, '->', fixedDto.isPublished);
+        }
+        if (rawQuery.isActive !== undefined) {
+            fixedDto.isActive = rawQuery.isActive === 'true';
+            console.log('isActive FORCED conversion:', rawQuery.isActive, '->', fixedDto.isActive);
+        }
+        console.log('FINAL DTO after manual conversion:', JSON.stringify(fixedDto, null, 2));
+        return this.service.findAll(fixedDto);
     }
     async findById(id, userId) {
         const event = await this.service.findById(id);
@@ -72,31 +94,6 @@ let EventsController = class EventsController {
             throw new common_1.ForbiddenException('You can only delete your own events');
         }
         return this.service.remove(id);
-    }
-    async togglePublish(id, isPublished, userId) {
-        if (typeof isPublished !== 'boolean') {
-            throw new Error('isPublished must be a boolean');
-        }
-        const event = await this.service.findById(id);
-        if (event.userId !== userId) {
-            throw new common_1.ForbiddenException('You can only modify your own events');
-        }
-        return this.service.togglePublish(id, isPublished);
-    }
-    async countActiveEvents() {
-        const count = await this.service.countActiveEvents();
-        return { count };
-    }
-    async findUpcomingEvents(days) {
-        const daysToCheck = days && days > 0 && days <= 30 ? days : 7;
-        return this.service.findUpcomingEvents(daysToCheck);
-    }
-    async test() {
-        return {
-            success: true,
-            message: 'Events API is working!',
-            timestamp: new Date().toISOString()
-        };
     }
 };
 exports.EventsController = EventsController;
@@ -146,8 +143,9 @@ __decorate([
     (0, swagger_1.ApiQuery)({ name: 'isActive', required: false, description: 'Filter by active status' }),
     __param(0, (0, common_1.Query)()),
     __param(1, (0, current_user_decorator_1.UserId)()),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [event_pagination_dto_1.EventPaginationDto, Number]),
+    __metadata("design:paramtypes", [event_pagination_dto_1.EventPaginationDto, Number, Object]),
     __metadata("design:returntype", Promise)
 ], EventsController.prototype, "findAll", null);
 __decorate([
@@ -230,7 +228,7 @@ __decorate([
     (0, common_1.Delete)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
     (0, swagger_1.ApiOperation)({
-        summary: 'Remove event',
+        summary: 'Unpublish (deactivate) event',
         description: 'Deactivates an event (soft delete). The event will be marked as inactive instead of being permanently deleted. Users can only delete their own events.'
     }),
     (0, swagger_1.ApiParam)({ name: 'id', description: 'Event UUID' }),
@@ -253,88 +251,6 @@ __decorate([
     __metadata("design:paramtypes", [Number, Number]),
     __metadata("design:returntype", Promise)
 ], EventsController.prototype, "remove", null);
-__decorate([
-    (0, common_1.Patch)(':id/publish'),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Toggle event publish status',
-        description: 'Publishes or unpublishes an event. Users can only modify their own events.'
-    }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: 'Event UUID' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: 'Event publish status updated successfully',
-        type: event_output_dto_1.EventOutputDto
-    }),
-    (0, swagger_1.ApiBadRequestResponse)({
-        description: 'Invalid UUID format or request body'
-    }),
-    (0, swagger_1.ApiNotFoundResponse)({
-        description: 'Event not found'
-    }),
-    (0, swagger_1.ApiForbiddenResponse)({
-        description: 'You can only modify your own events'
-    }),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)('isPublished')),
-    __param(2, (0, current_user_decorator_1.UserId)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Boolean, Number]),
-    __metadata("design:returntype", Promise)
-], EventsController.prototype, "togglePublish", null);
-__decorate([
-    (0, public_decorator_1.Public)(),
-    (0, common_1.Get)('stats/count'),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Count active events',
-        description: 'Returns the total number of active events in the system'
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: 'Event count retrieved successfully',
-        schema: {
-            type: 'object',
-            properties: {
-                count: { type: 'number', example: 75 }
-            }
-        }
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], EventsController.prototype, "countActiveEvents", null);
-__decorate([
-    (0, public_decorator_1.Public)(),
-    (0, common_1.Get)('stats/upcoming'),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Get upcoming events',
-        description: 'Returns events that are ending soon (within specified number of days)'
-    }),
-    (0, swagger_1.ApiQuery)({ name: 'days', required: false, description: 'Number of days to look ahead (default: 7)' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: 'Upcoming events retrieved successfully',
-        type: [event_output_dto_1.EventOutputDto]
-    }),
-    __param(0, (0, common_1.Query)('days')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], EventsController.prototype, "findUpcomingEvents", null);
-__decorate([
-    (0, common_1.Get)('test'),
-    (0, public_decorator_1.Public)(),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Test endpoint (public)',
-        description: 'Public endpoint to test if API is working'
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: 'API is working'
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], EventsController.prototype, "test", null);
 exports.EventsController = EventsController = __decorate([
     (0, swagger_1.ApiTags)('events'),
     (0, swagger_1.ApiBearerAuth)(),

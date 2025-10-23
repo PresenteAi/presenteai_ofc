@@ -13,10 +13,16 @@ async function bootstrap() {
         allowedHeaders: 'Content-Type, Accept, Authorization',
         credentials: true,
     });
+    app.use((req, res, next) => {
+        if (req.headers['content-type'] && req.headers['content-type'].includes('text/plain')) {
+            req.headers['content-type'] = 'application/json';
+        }
+        next();
+    });
     app.useGlobalInterceptors(new logging_interceptor_1.LoggingInterceptor());
     app.useGlobalPipes(new common_1.ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
+        whitelist: false,
+        forbidNonWhitelisted: false,
         transform: true,
         transformOptions: {
             enableImplicitConversion: true,
@@ -30,7 +36,7 @@ async function bootstrap() {
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
     swagger_1.SwaggerModule.setup('api', app, document);
-    const port = process.env.PORT ?? 3000;
+    const port = process.env.PORT ?? 8080;
     await app.listen(port, '0.0.0.0');
     console.log(`🚀 Application is running on: http://localhost:${port}`);
     console.log(`📚 Swagger documentation: http://localhost:${port}/api`);

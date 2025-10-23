@@ -50,21 +50,6 @@ export class GiftTemplatesChangedController {
     return this.giftTemplatesChangedService.create(createGiftTemplateChangedDto, userId);
   }
 
-  @Get()
-  @Public()
-  @ApiOperation({ 
-    summary: 'List all customized gift templates',
-    description: 'Get all customized gift templates (public ones or your own if authenticated)'
-  })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'List of customized gift templates',
-    type: [GiftTemplateOutputDto] 
-  })
-  async findAll() {
-    return this.giftTemplatesChangedService.findAll();
-  }
-
   @Get('public')
   @Public()
   @ApiOperation({ 
@@ -97,10 +82,10 @@ export class GiftTemplatesChangedController {
   }
 
   @Get('by-template/:giftTemplateId')
-  @Public()
+  @ApiBearerAuth()
   @ApiOperation({ 
     summary: 'Get customizations of a specific template',
-    description: 'Get all customizations based on a specific gift template'
+    description: 'Get customizations based on a specific gift template. Only shows public customizations or your own private ones.'
   })
   @ApiResponse({ 
     status: 200, 
@@ -108,13 +93,15 @@ export class GiftTemplatesChangedController {
     type: [GiftTemplateOutputDto] 
   })
   @ApiResponse({ status: 400, description: 'Bad Request - Invalid template ID' })
+  @ApiResponse({ status: 401, description: 'Unauthorized - Invalid or missing token' })
   async findByGiftTemplateId(
     @Param('giftTemplateId', ParseIntPipe) giftTemplateId: number,
+    @UserId() userId: number
   ) {
     if (giftTemplateId <= 0) {
       throw new BadRequestException('Gift template ID must be a positive number');
     }
-    return this.giftTemplatesChangedService.findByGiftTemplateId(giftTemplateId);
+    return this.giftTemplatesChangedService.findByGiftTemplateId(giftTemplateId, userId);
   }
 
   @Get(':id')

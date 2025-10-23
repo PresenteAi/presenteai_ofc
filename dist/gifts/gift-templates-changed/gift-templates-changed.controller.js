@@ -30,20 +30,17 @@ let GiftTemplatesChangedController = class GiftTemplatesChangedController {
     async create(createGiftTemplateChangedDto, userId) {
         return this.giftTemplatesChangedService.create(createGiftTemplateChangedDto, userId);
     }
-    async findAll() {
-        return this.giftTemplatesChangedService.findAll();
-    }
     async findPublicChanged() {
         return this.giftTemplatesChangedService.findPublicChanged();
     }
     async findMyCustomizations(userId) {
         return this.giftTemplatesChangedService.findByUserId(userId);
     }
-    async findByGiftTemplateId(giftTemplateId) {
+    async findByGiftTemplateId(giftTemplateId, userId) {
         if (giftTemplateId <= 0) {
             throw new common_1.BadRequestException('Gift template ID must be a positive number');
         }
-        return this.giftTemplatesChangedService.findByGiftTemplateId(giftTemplateId);
+        return this.giftTemplatesChangedService.findByGiftTemplateId(giftTemplateId, userId);
     }
     async findOne(id, userId) {
         if (id <= 0) {
@@ -106,22 +103,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GiftTemplatesChangedController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)(),
-    (0, public_decorator_1.Public)(),
-    (0, swagger_1.ApiOperation)({
-        summary: 'List all customized gift templates',
-        description: 'Get all customized gift templates (public ones or your own if authenticated)'
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: 'List of customized gift templates',
-        type: [gift_output_dto_1.GiftTemplateOutputDto]
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], GiftTemplatesChangedController.prototype, "findAll", null);
-__decorate([
     (0, common_1.Get)('public'),
     (0, public_decorator_1.Public)(),
     (0, swagger_1.ApiOperation)({
@@ -157,10 +138,10 @@ __decorate([
 ], GiftTemplatesChangedController.prototype, "findMyCustomizations", null);
 __decorate([
     (0, common_1.Get)('by-template/:giftTemplateId'),
-    (0, public_decorator_1.Public)(),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({
         summary: 'Get customizations of a specific template',
-        description: 'Get all customizations based on a specific gift template'
+        description: 'Get customizations based on a specific gift template. Only shows public customizations or your own private ones.'
     }),
     (0, swagger_1.ApiResponse)({
         status: 200,
@@ -168,9 +149,11 @@ __decorate([
         type: [gift_output_dto_1.GiftTemplateOutputDto]
     }),
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Bad Request - Invalid template ID' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized - Invalid or missing token' }),
     __param(0, (0, common_1.Param)('giftTemplateId', common_1.ParseIntPipe)),
+    __param(1, (0, current_user_decorator_1.UserId)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, Number]),
     __metadata("design:returntype", Promise)
 ], GiftTemplatesChangedController.prototype, "findByGiftTemplateId", null);
 __decorate([

@@ -19,10 +19,7 @@ export declare class EventsService {
     findByUserId(userId: string, paginationDto: EventPaginationDto): Promise<PaginatedEventsDto>;
     update(id: number, updateDto: UpdateEventDto, userId?: number): Promise<EventOutputDto>;
     remove(id: number): Promise<void>;
-    togglePublish(id: number, isPublished: boolean): Promise<EventOutputDto>;
-    countActiveEvents(): Promise<number>;
     countByUserId(userId: string): Promise<number>;
-    findUpcomingEvents(days?: number): Promise<EventOutputDto[]>;
     private validateCreateEventDto;
     private validateUpdateEventDto;
     private validateColor;

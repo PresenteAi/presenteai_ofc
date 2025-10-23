@@ -52,8 +52,13 @@ let EventsService = class EventsService {
         }
     }
     async findAll(paginationDto) {
+        console.log('=== EVENTS FINDALL DEBUG ===');
+        console.log('Original DTO received:', JSON.stringify(paginationDto, null, 2));
         const sanitizedPagination = this.sanitizePaginationDto(paginationDto);
+        console.log('Sanitized pagination:', JSON.stringify(sanitizedPagination, null, 2));
         const { events, total } = await this.repository.findAll(sanitizedPagination);
+        console.log('Events found:', events.length);
+        console.log('Total count:', total);
         const totalPages = Math.ceil(total / (sanitizedPagination.limit || 10));
         const hasNext = (sanitizedPagination.page || 1) < totalPages;
         const hasPrev = (sanitizedPagination.page || 1) > 1;
@@ -72,6 +77,9 @@ let EventsService = class EventsService {
             throw new common_1.BadRequestException('Invalid event ID');
         }
         const event = await this.repository.findById(id);
+        if (!event) {
+            throw new common_1.NotFoundException('Event not found');
+        }
         return this.mapToOutputDto(event);
     }
     async findByPublicUrl(publicUrl) {
@@ -165,26 +173,11 @@ let EventsService = class EventsService {
         const existingEvent = await this.repository.findById(id);
         await this.repository.softDelete(id);
     }
-    async togglePublish(id, isPublished) {
-        if (!id || typeof id !== 'number' || id <= 0) {
-            throw new common_1.BadRequestException('Invalid event ID');
-        }
-        const existingEvent = await this.repository.findById(id);
-        const updatedEvent = await this.repository.togglePublish(id, isPublished);
-        return this.mapToOutputDto(updatedEvent);
-    }
-    async countActiveEvents() {
-        return await this.repository.countActiveEvents();
-    }
     async countByUserId(userId) {
         if (!userId || typeof userId !== 'string') {
             return 0;
         }
         return await this.repository.countByUserId(Number(userId));
-    }
-    async findUpcomingEvents(days = 7) {
-        const events = await this.repository.findUpcomingEvents(days);
-        return events.map(event => this.mapToOutputDto(event));
     }
     async validateCreateEventDto(dto) {
         const errors = [];
@@ -368,6 +361,30 @@ let EventsService = class EventsService {
             .replace(/^-|-$/g, '');
     }
     mapToOutputDto(event) {
+        const formatDate = (date) => {
+            if (!date)
+                return undefined;
+            if (typeof date === 'string') {
+                const dateObj = new Date(date);
+                if (isNaN(dateObj.getTime()))
+                    return undefined;
+                return dateObj.toISOString().split('T')[0];
+            }
+            if (date instanceof Date) {
+                if (isNaN(date.getTime()))
+                    return undefined;
+                return date.toISOString().split('T')[0];
+            }
+            try {
+                const dateObj = new Date(date);
+                if (isNaN(dateObj.getTime()))
+                    return undefined;
+                return dateObj.toISOString().split('T')[0];
+            }
+            catch {
+                return undefined;
+            }
+        };
         return {
             id: event.id,
             userId: event.userId,
@@ -379,8 +396,8 @@ let EventsService = class EventsService {
             secondaryColor: event.secondaryColor,
             tertiaryColor: event.tertiaryColor,
             fontFamily: event.fontFamily,
-            startDate: event.startDate ? event.startDate.toISOString().split('T')[0] : undefined,
-            endDate: event.endDate ? event.endDate.toISOString().split('T')[0] : undefined,
+            startDate: formatDate(event.startDate),
+            endDate: formatDate(event.endDate),
             publicUrl: event.publicUrl,
             isPublished: event.isPublished,
             isActive: event.isActive,

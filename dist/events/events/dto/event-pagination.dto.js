@@ -119,7 +119,7 @@ __decorate([
     }),
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Type)(() => Boolean),
-    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsBoolean)({ message: 'isPublished must be a boolean value' }),
     __metadata("design:type", Boolean)
 ], EventPaginationDto.prototype, "isPublished", void 0);
 __decorate([
@@ -130,7 +130,7 @@ __decorate([
     }),
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Type)(() => Boolean),
-    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsBoolean)({ message: 'isActive must be a boolean value' }),
     __metadata("design:type", Boolean)
 ], EventPaginationDto.prototype, "isActive", void 0);
 //# sourceMappingURL=event-pagination.dto.js.map

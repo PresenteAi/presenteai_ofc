@@ -5,12 +5,13 @@ import {
   Get, 
   Param,
   Put, 
-  Delete, 
   Query,
   HttpCode,
   HttpStatus,
   UseGuards,
-  ParseIntPipe
+  ParseIntPipe,
+  Req,
+  BadRequestException
 } from '@nestjs/common';
 import { Public } from '../../auth/decorators/public.decorator';
 import { UsersService } from './users.service';
@@ -27,13 +28,21 @@ import {
   ApiNotFoundResponse,
   ApiConflictResponse,
   ApiParam,
-  ApiQuery
+  ApiQuery,
+  ApiBearerAuth,
+  ApiUnauthorizedResponse
 } from '@nestjs/swagger';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly service: UsersService) {}
+
+  // TODO: Implementar endpoints específicos para segurança:
+  // PUT /users/:id/email - Alterar email (com confirmação)
+  // PUT /users/:id/password - Alterar senha (com senha atual)
+  // PUT /users/:id/status - Ativar/desativar usuário (admin only)
+  // DELETE e /stats/count endpoints foram removidos por questões de segurança
 
   /**
    * Criar um novo usuário
@@ -66,14 +75,18 @@ export class UsersController {
    * Listar todos os usuários com paginação
    */
   @Get()
+  @ApiBearerAuth()
   @ApiOperation({ 
     summary: 'Get all users with pagination',
-    description: 'Retrieves a paginated list of users with optional search and sorting'
+    description: 'Retrieves a paginated list of users with optional search and sorting. Requires authentication.'
   })
   @ApiResponse({ 
     status: 200, 
     description: 'Users retrieved successfully', 
     type: PaginatedUsersDto 
+  })
+  @ApiUnauthorizedResponse({ 
+    description: 'Authentication required' 
   })
   @ApiQuery({ name: 'page', required: false, description: 'Page number (default: 1)' })
   @ApiQuery({ name: 'limit', required: false, description: 'Items per page (default: 10, max: 100)' })
@@ -90,15 +103,19 @@ export class UsersController {
    * Buscar usuário por ID
    */
   @Get(':id')
+  @ApiBearerAuth()
   @ApiOperation({ 
     summary: 'Get user by ID',
-    description: 'Retrieves a specific user by their unique identifier'
+    description: 'Retrieves a specific user by their unique identifier. Requires authentication.'
   })
-  @ApiParam({ name: 'id', description: 'User UUID' })
+  @ApiParam({ name: 'id', description: 'User ID' })
   @ApiResponse({ 
     status: 200, 
     description: 'User found successfully', 
     type: UserOutputDto 
+  })
+  @ApiUnauthorizedResponse({ 
+    description: 'Authentication required' 
   })
   @ApiBadRequestResponse({ 
     description: 'Invalid UUID format' 
@@ -113,74 +130,70 @@ export class UsersController {
   }
 
   /**
-   * Atualizar usuário
+   * Atualizar usuário (apenas nome)
    */
   @Put(':id')
+  @ApiBearerAuth()
   @ApiOperation({ 
-    summary: 'Update user',
-    description: 'Updates user information. Only provided fields will be updated.'
+    summary: 'Update user name',
+    description: 'Updates only the user name. Email, password and other sensitive fields have separate endpoints for security. Requires authentication.'
   })
-  @ApiParam({ name: 'id', description: 'User UUID' })
+  @ApiParam({ name: 'id', description: 'User ID' })
   @ApiResponse({ 
     status: 200, 
-    description: 'User updated successfully', 
+    description: 'User name updated successfully', 
     type: UserOutputDto 
   })
+  @ApiUnauthorizedResponse({ 
+    description: 'Authentication required' 
+  })
   @ApiBadRequestResponse({ 
-    description: 'Invalid input data or UUID format' 
+    description: 'Invalid input data or user ID format' 
   })
   @ApiNotFoundResponse({ 
     description: 'User not found' 
-  })
-  @ApiConflictResponse({ 
-    description: 'Email already exists' 
   })
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateDto: UpdateUserDto
+    @Body() updateDto: UpdateUserDto,
+    @Req() request: any
   ): Promise<UserOutputDto> {
+    // Debug e fix para problema de Content-Type
+    if (!updateDto || Object.keys(updateDto).length === 0) {
+      // Tentar fazer parse manual do raw body se disponível
+      if (request.rawBody || request.body) {
+        try {
+          const bodyText = request.rawBody || JSON.stringify(request.body);
+          const parsedBody = typeof bodyText === 'string' ? JSON.parse(bodyText) : bodyText;
+          updateDto = parsedBody;
+        } catch (error) {
+          throw new BadRequestException('Invalid JSON in request body');
+        }
+      } else {
+        throw new BadRequestException('Request body is required');
+      }
+    }
+    
     return this.service.update(id, updateDto);
-  }
-
-  /**
-   * Remover usuário (soft delete)
-   */
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ 
-    summary: 'Remove user',
-    description: 'Deactivates a user (soft delete). The user will be marked as inactive instead of being permanently deleted.'
-  })
-  @ApiParam({ name: 'id', description: 'User UUID' })
-  @ApiResponse({ 
-    status: 204, 
-    description: 'User deactivated successfully' 
-  })
-  @ApiBadRequestResponse({ 
-    description: 'Invalid UUID format' 
-  })
-  @ApiNotFoundResponse({ 
-    description: 'User not found' 
-  })
-  async remove(
-    @Param('id', ParseIntPipe) id: number
-  ): Promise<void> {
-    return this.service.remove(id);
   }
 
   /**
    * Buscar usuário por email
    */
   @Get('email/:email')
+  @ApiBearerAuth()
   @ApiOperation({ 
     summary: 'Get user by email',
-    description: 'Retrieves a user by their email address'
+    description: 'Retrieves a user by their email address. Requires authentication.'
   })
   @ApiParam({ name: 'email', description: 'User email address' })
   @ApiResponse({ 
     status: 200, 
     description: 'User found successfully', 
     type: UserOutputDto 
+  })
+  @ApiUnauthorizedResponse({ 
+    description: 'Authentication required' 
   })
   @ApiNotFoundResponse({ 
     description: 'User not found' 
@@ -191,26 +204,4 @@ export class UsersController {
     return this.service.findByEmail(email);
   }
 
-  /**
-   * Contar usuários ativos
-   */
-  @Get('stats/count')
-  @ApiOperation({ 
-    summary: 'Count active users',
-    description: 'Returns the total number of active users in the system'
-  })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'User count retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        count: { type: 'number', example: 150 }
-      }
-    }
-  })
-  async countActiveUsers(): Promise<{ count: number }> {
-    const count = await this.service.countActiveUsers();
-    return { count };
-  }
 }

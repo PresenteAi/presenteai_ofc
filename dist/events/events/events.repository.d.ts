@@ -14,9 +14,6 @@ export declare class EventsRepository {
     findByUserId(userId: number): Promise<Event[]>;
     update(id: number, updateData: Partial<Event>): Promise<Event>;
     softDelete(id: number): Promise<void>;
-    togglePublish(id: number, isPublished: boolean): Promise<Event>;
-    countActiveEvents(): Promise<number>;
     countByUserId(userId: number): Promise<number>;
     exists(id: number): Promise<boolean>;
-    findUpcomingEvents(days?: number): Promise<Event[]>;
 }

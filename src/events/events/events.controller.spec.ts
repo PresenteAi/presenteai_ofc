@@ -13,9 +13,6 @@ describe('EventsController', () => {
     findByPublicUrl: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
-    togglePublish: jest.fn(),
-    countActiveEvents: jest.fn(),
-    findUpcomingEvents: jest.fn(),
   };
 
   beforeEach(async () => {

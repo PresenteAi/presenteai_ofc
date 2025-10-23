@@ -10,7 +10,7 @@ export declare class GiftTemplatesService {
     constructor(repository: GiftTemplatesRepository);
     create(dto: CreateGiftTemplateDto, userId: number): Promise<GiftTemplateOutputDto>;
     findAll(paginationDto: GiftTemplatePaginationDto): Promise<PaginatedGiftTemplatesDto>;
-    findById(id: number): Promise<GiftTemplateOutputDto>;
+    findById(id: number, userId?: number): Promise<GiftTemplateOutputDto>;
     findByUserId(userId: number): Promise<GiftTemplateOutputDto[]>;
     update(id: number, dto: UpdateGiftTemplateDto, userId: number): Promise<GiftTemplateOutputDto>;
     remove(id: number, userId: number): Promise<void>;
