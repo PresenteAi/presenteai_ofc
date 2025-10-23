@@ -115,23 +115,23 @@ describe('GiftTemplatesController', () => {
     it('should return a gift template by id', async () => {
       service.findById.mockResolvedValue(mockGiftTemplate as any);
 
-      const result = await controller.findById(1);
+      const result = await controller.findById(1, 1); // Added userId parameter
 
-      expect(service.findById).toHaveBeenCalledWith(1);
+      expect(service.findById).toHaveBeenCalledWith(1, 1);
       expect(result).toEqual(mockGiftTemplate);
     });
 
     it('should throw BadRequestException for invalid id', async () => {
       service.findById.mockRejectedValue(new BadRequestException('Invalid gift template ID'));
       
-      await expect(controller.findById(0)).rejects.toThrow(BadRequestException);
-      await expect(controller.findById(-1)).rejects.toThrow(BadRequestException);
+      await expect(controller.findById(0, 1)).rejects.toThrow(BadRequestException);
+      await expect(controller.findById(-1, 1)).rejects.toThrow(BadRequestException);
     });
 
     it('should handle NotFoundException', async () => {
       service.findById.mockRejectedValue(new NotFoundException());
 
-      await expect(controller.findById(999)).rejects.toThrow(NotFoundException);
+      await expect(controller.findById(999, 1)).rejects.toThrow(NotFoundException);
     });
   });
 

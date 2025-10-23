@@ -41,7 +41,6 @@ describe('GiftEventsController (Integration)', () => {
       findAll: jest.fn(),
       findByEventId: jest.fn(),
       findOne: jest.fn(),
-      update: jest.fn(),
       remove: jest.fn(),
 
       markAsCompleted: jest.fn(),
@@ -215,32 +214,6 @@ describe('GiftEventsController (Integration)', () => {
       });
     });
   });
-
-  describe('/gift-events/:id (PATCH)', () => {
-    it('should update gift event', async () => {
-      const updateDto = {
-        customValue: 250.00,
-        status: GiftEventStatus.COMPLETED,
-      };
-
-      const updatedResponse = { ...mockGiftEventResponse, customValue: 250.00, status: 'completed' };
-      giftEventsService.update.mockResolvedValue(updatedResponse);
-
-      const response = await request(app.getHttpServer())
-        .patch('/gift-events/1')
-        .send(updateDto)
-        .expect(200);
-
-      expect(giftEventsService.update).toHaveBeenCalledWith(1, updateDto);
-      expect(response.body).toMatchObject({
-        id: 1,
-        customValue: 250.00,
-        status: 'completed',
-      });
-    });
-  });
-
-
 
   describe('/gift-events/:id/complete (PATCH)', () => {
     it('should mark gift event as completed', async () => {

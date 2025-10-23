@@ -17,7 +17,6 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const gift_events_service_1 = require("../services/gift-events.service");
 const create_gift_event_dto_1 = require("../dto/create-gift-event.dto");
-const update_gift_event_dto_1 = require("../dto/update-gift-event.dto");
 const gift_event_filters_dto_1 = require("../dto/gift-event-filters.dto");
 const gift_event_response_dto_1 = require("../dto/gift-event-response.dto");
 const jwt_auth_guard_1 = require("../../../auth/guards/jwt-auth.guard");
@@ -40,9 +39,6 @@ let GiftEventsController = class GiftEventsController {
     }
     async findOne(id) {
         return await this.giftEventsService.findOne(id);
-    }
-    async update(id, updateGiftEventDto) {
-        return await this.giftEventsService.update(id, updateGiftEventDto);
     }
     async markAsCompleted(id) {
         return await this.giftEventsService.markAsCompleted(id);
@@ -151,27 +147,6 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], GiftEventsController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Patch)(':id'),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Update gift event',
-        description: 'Updates information of a specific gift event'
-    }),
-    (0, swagger_1.ApiParam)({ name: 'id', description: 'Gift event ID', type: 'number' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: 'Gift event updated successfully',
-        type: gift_event_response_dto_1.GiftEventResponseDto
-    }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid data provided' }),
-    (0, swagger_1.ApiResponse)({ status: 404, description: 'Gift event not found' }),
-    (0, swagger_1.ApiResponse)({ status: 409, description: 'Conflict with existing template' }),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, update_gift_event_dto_1.UpdateGiftEventDto]),
-    __metadata("design:returntype", Promise)
-], GiftEventsController.prototype, "update", null);
 __decorate([
     (0, common_1.Patch)(':id/complete'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),

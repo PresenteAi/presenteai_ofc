@@ -145,7 +145,7 @@ describe('EventsRepository', () => {
       expect(mockRepository.update).toHaveBeenCalledWith(
         1,
         expect.objectContaining({
-          isActive: false,
+          isPublished: false,
         })
       );
     });

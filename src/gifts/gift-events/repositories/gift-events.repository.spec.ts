@@ -4,7 +4,6 @@ import { Repository, SelectQueryBuilder } from 'typeorm';
 import { GiftEventsRepository } from '../repositories/gift-events.repository';
 import { GiftEvent, GiftEventStatus } from '../../entities/gift-event.entity';
 import { CreateGiftEventDto } from '../dto/create-gift-event.dto';
-import { UpdateGiftEventDto } from '../dto/update-gift-event.dto';
 import { GiftEventFiltersDto } from '../dto/gift-event-filters.dto';
 
 describe('GiftEventsRepository', () => {
@@ -194,31 +193,6 @@ describe('GiftEventsRepository', () => {
         relations: ['event', 'giftTemplate', 'giftTemplateChanged', 'giftTemplateChanged.giftTemplate'],
       });
       expect(result).toEqual(mockChangedGiftEvent);
-    });
-  });
-
-  describe('update', () => {
-    it('should update a gift event', async () => {
-      const updateDto: UpdateGiftEventDto = {
-        customValue: 150.00,
-        status: GiftEventStatus.COMPLETED,
-      };
-      
-      const updatedGiftEvent = { ...mockGiftEvent, ...updateDto };
-      mockRepository.findOne.mockResolvedValue(updatedGiftEvent as GiftEvent);
-
-      const result = await repository.update(1, updateDto);
-
-      expect(mockRepository.update).toHaveBeenCalledWith(1, updateDto);
-      expect(result).toEqual(updatedGiftEvent);
-    });
-
-    it('should return null when gift event not found for update', async () => {
-      mockRepository.findOne.mockResolvedValue(null);
-
-      const result = await repository.update(999, {});
-
-      expect(result).toBeNull();
     });
   });
 

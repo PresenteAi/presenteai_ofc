@@ -221,7 +221,7 @@ describe('GiftTemplatesModule (E2E) - Mock Tests', () => {
         .get('/gift-templates/1')
         .expect(200)
         .then(response => {
-          expect(service.findById).toHaveBeenCalledWith(1);
+          expect(service.findById).toHaveBeenCalledWith(1, 1); // Now expects userId parameter
           expect(response.body).toEqual(expectedSerializedTemplate);
         });
     });

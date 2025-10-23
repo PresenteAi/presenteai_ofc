@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GiftEventsController } from './gift-events.controller';
 import { GiftEventsService } from '../services/gift-events.service';
 import { CreateGiftEventDto } from '../dto/create-gift-event.dto';
-import { UpdateGiftEventDto } from '../dto/update-gift-event.dto';
 import { GiftEventFiltersDto } from '../dto/gift-event-filters.dto';
 import { GiftEventResponseDto, PaginatedGiftEventResponseDto } from '../dto/gift-event-response.dto';
 import { GiftEventStatus } from '../../entities/gift-event.entity';
@@ -49,7 +48,6 @@ describe('GiftEventsController', () => {
       findAll: jest.fn(),
       findByEventId: jest.fn(),
       findOne: jest.fn(),
-      update: jest.fn(),
       remove: jest.fn(),
 
       markAsCompleted: jest.fn(),
@@ -151,25 +149,6 @@ describe('GiftEventsController', () => {
       expect(result).toEqual(mockGiftEventResponse);
     });
   });
-
-  describe('update', () => {
-    it('should update a gift event', async () => {
-      const updateDto: UpdateGiftEventDto = {
-        customValue: 150.00,
-        status: GiftEventStatus.COMPLETED,
-      };
-
-      const updatedResponse = { ...mockGiftEventResponse, ...updateDto };
-      service.update.mockResolvedValue(updatedResponse);
-
-      const result = await controller.update(1, updateDto);
-
-      expect(service.update).toHaveBeenCalledWith(1, updateDto);
-      expect(result).toEqual(updatedResponse);
-    });
-  });
-
-
 
   describe('markAsCompleted', () => {
     it('should mark gift event as completed', async () => {

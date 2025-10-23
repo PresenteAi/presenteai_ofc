@@ -68,44 +68,6 @@ let GiftEventsService = class GiftEventsService {
         }
         return new gift_event_response_dto_1.GiftEventResponseDto(giftEvent);
     }
-    async update(id, updateGiftEventDto) {
-        const existingGiftEvent = await this.giftEventsRepository.findOne(id);
-        if (!existingGiftEvent) {
-            throw new common_1.NotFoundException(`Gift event with ID ${id} not found`);
-        }
-        if (updateGiftEventDto.giftTemplateId || updateGiftEventDto.giftTemplateChangedId) {
-            const newGiftTemplateId = updateGiftEventDto.giftTemplateId ?? existingGiftEvent.giftTemplateId;
-            const newGiftTemplateChangedId = updateGiftEventDto.giftTemplateChangedId ?? existingGiftEvent.giftTemplateChangedId;
-            if (newGiftTemplateId && newGiftTemplateChangedId) {
-                throw new common_1.BadRequestException('Cannot have both giftTemplateId and giftTemplateChangedId');
-            }
-            if (!newGiftTemplateId && !newGiftTemplateChangedId) {
-                throw new common_1.BadRequestException('Must have either giftTemplateId or giftTemplateChangedId');
-            }
-            if (newGiftTemplateId !== existingGiftEvent.giftTemplateId ||
-                newGiftTemplateChangedId !== existingGiftEvent.giftTemplateChangedId) {
-                const conflictingGiftEvent = await this.giftEventsRepository.findOneByEventAndTemplate(existingGiftEvent.eventId, newGiftTemplateId || undefined, newGiftTemplateChangedId || undefined);
-                if (conflictingGiftEvent && conflictingGiftEvent.id !== id) {
-                    throw new common_1.ConflictException('Gift template is already associated with this event');
-                }
-            }
-        }
-        try {
-            const updatedGiftEvent = await this.giftEventsRepository.update(id, updateGiftEventDto);
-            if (!updatedGiftEvent) {
-                throw new common_1.NotFoundException(`Gift event with ID ${id} not found`);
-            }
-            await this.checkAndMarkAsCompleted(updatedGiftEvent);
-            const refreshedGiftEvent = await this.giftEventsRepository.findOne(id);
-            return new gift_event_response_dto_1.GiftEventResponseDto(refreshedGiftEvent);
-        }
-        catch (error) {
-            if (error.code === '23503') {
-                throw new common_1.BadRequestException('Referenced event, gift template, or gift template changed does not exist');
-            }
-            throw error;
-        }
-    }
     async remove(id) {
         const giftEvent = await this.giftEventsRepository.findOne(id);
         if (!giftEvent) {

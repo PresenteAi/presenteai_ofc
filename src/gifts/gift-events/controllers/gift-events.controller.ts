@@ -22,7 +22,6 @@ import {
 } from '@nestjs/swagger';
 import { GiftEventsService } from '../services/gift-events.service';
 import { CreateGiftEventDto } from '../dto/create-gift-event.dto';
-import { UpdateGiftEventDto } from '../dto/update-gift-event.dto';
 import { GiftEventFiltersDto } from '../dto/gift-event-filters.dto';
 import { GiftEventResponseDto, PaginatedGiftEventResponseDto } from '../dto/gift-event-response.dto';
 import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';
@@ -119,28 +118,6 @@ export class GiftEventsController {
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<GiftEventResponseDto> {
     return await this.giftEventsService.findOne(id);
   }
-
-  @Patch(':id')
-  @ApiOperation({ 
-    summary: 'Update gift event',
-    description: 'Updates information of a specific gift event'
-  })
-  @ApiParam({ name: 'id', description: 'Gift event ID', type: 'number' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Gift event updated successfully',
-    type: GiftEventResponseDto
-  })
-  @ApiResponse({ status: 400, description: 'Invalid data provided' })
-  @ApiResponse({ status: 404, description: 'Gift event not found' })
-  @ApiResponse({ status: 409, description: 'Conflict with existing template' })
-  async update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateGiftEventDto: UpdateGiftEventDto,
-  ): Promise<GiftEventResponseDto> {
-    return await this.giftEventsService.update(id, updateGiftEventDto);
-  }
-
 
   @Patch(':id/complete')
   @HttpCode(HttpStatus.OK)

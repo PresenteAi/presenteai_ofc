@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { GiftEventsRepository } from '../repositories/gift-events.repository';
 import { CreateGiftEventDto } from '../dto/create-gift-event.dto';
-import { UpdateGiftEventDto } from '../dto/update-gift-event.dto';
 import { GiftEventFiltersDto } from '../dto/gift-event-filters.dto';
 import { GiftEventResponseDto, PaginatedGiftEventResponseDto } from '../dto/gift-event-response.dto';
 import { GiftEvent, GiftEventStatus } from '../../entities/gift-event.entity';
@@ -78,64 +77,6 @@ export class GiftEventsService {
     }
 
     return new GiftEventResponseDto(giftEvent);
-  }
-
-  async update(id: number, updateGiftEventDto: UpdateGiftEventDto): Promise<GiftEventResponseDto> {
-    const existingGiftEvent = await this.giftEventsRepository.findOne(id);
-
-    if (!existingGiftEvent) {
-      throw new NotFoundException(`Gift event with ID ${id} not found`);
-    }
-
-    // Validar mudanças de template se aplicável
-    if (updateGiftEventDto.giftTemplateId || updateGiftEventDto.giftTemplateChangedId) {
-      // Verificar se não está tentando definir ambos
-      const newGiftTemplateId = updateGiftEventDto.giftTemplateId ?? existingGiftEvent.giftTemplateId;
-      const newGiftTemplateChangedId = updateGiftEventDto.giftTemplateChangedId ?? existingGiftEvent.giftTemplateChangedId;
-
-      if (newGiftTemplateId && newGiftTemplateChangedId) {
-        throw new BadRequestException('Cannot have both giftTemplateId and giftTemplateChangedId');
-      }
-
-      if (!newGiftTemplateId && !newGiftTemplateChangedId) {
-        throw new BadRequestException('Must have either giftTemplateId or giftTemplateChangedId');
-      }
-
-      // Verificar se não existe outro gift event no mesmo evento com o mesmo template
-      if (newGiftTemplateId !== existingGiftEvent.giftTemplateId || 
-          newGiftTemplateChangedId !== existingGiftEvent.giftTemplateChangedId) {
-        
-        const conflictingGiftEvent = await this.giftEventsRepository.findOneByEventAndTemplate(
-          existingGiftEvent.eventId,
-          newGiftTemplateId || undefined,
-          newGiftTemplateChangedId || undefined,
-        );
-
-        if (conflictingGiftEvent && conflictingGiftEvent.id !== id) {
-          throw new ConflictException('Gift template is already associated with this event');
-        }
-      }
-    }
-
-    try {
-      const updatedGiftEvent = await this.giftEventsRepository.update(id, updateGiftEventDto);
-
-      if (!updatedGiftEvent) {
-        throw new NotFoundException(`Gift event with ID ${id} not found`);
-      }
-
-      // Auto-completar se necessário
-      await this.checkAndMarkAsCompleted(updatedGiftEvent);
-
-      // Recarregar para ter os dados atualizados
-      const refreshedGiftEvent = await this.giftEventsRepository.findOne(id);
-      return new GiftEventResponseDto(refreshedGiftEvent!);
-    } catch (error) {
-      if (error.code === '23503') { // Foreign key constraint error
-        throw new BadRequestException('Referenced event, gift template, or gift template changed does not exist');
-      }
-      throw error;
-    }
   }
 
   async remove(id: number): Promise<void> {

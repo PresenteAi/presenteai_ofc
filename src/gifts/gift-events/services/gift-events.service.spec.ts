@@ -4,7 +4,6 @@ import { GiftEventsService } from '../services/gift-events.service';
 import { GiftEventsRepository } from '../repositories/gift-events.repository';
 import { GiftEvent, GiftEventStatus } from '../../entities/gift-event.entity';
 import { CreateGiftEventDto } from '../dto/create-gift-event.dto';
-import { UpdateGiftEventDto } from '../dto/update-gift-event.dto';
 import { GiftEventFiltersDto } from '../dto/gift-event-filters.dto';
 import { GiftEventResponseDto } from '../dto/gift-event-response.dto';
 
@@ -169,41 +168,6 @@ describe('GiftEventsService', () => {
       repository.findOne.mockResolvedValue(null);
 
       await expect(service.findOne(999)).rejects.toThrow(NotFoundException);
-    });
-  });
-
-  describe('update', () => {
-    const updateDto: UpdateGiftEventDto = {
-      customValue: 150.00,
-      status: GiftEventStatus.COMPLETED,
-    };
-
-    it('should update a gift event successfully', async () => {
-      const updatedGiftEvent = { ...mockGiftEvent, ...updateDto };
-      repository.findOne
-        .mockResolvedValueOnce(mockGiftEvent as GiftEvent) // First call in update method
-        .mockResolvedValueOnce(updatedGiftEvent as GiftEvent) // Second call after update
-        .mockResolvedValueOnce(updatedGiftEvent as GiftEvent); // Third call for refresh
-      repository.update.mockResolvedValue(updatedGiftEvent as GiftEvent);
-
-      const result = await service.update(1, updateDto);
-
-      expect(repository.findOne).toHaveBeenCalledWith(1);
-      expect(repository.update).toHaveBeenCalledWith(1, updateDto);
-      expect(result).toBeInstanceOf(GiftEventResponseDto);
-    });
-
-    it('should throw NotFoundException when gift event not found', async () => {
-      repository.findOne.mockResolvedValue(null);
-
-      await expect(service.update(999, updateDto)).rejects.toThrow(NotFoundException);
-    });
-
-    it('should validate template ID changes', async () => {
-      const templateUpdateDto = { giftTemplateId: 2, giftTemplateChangedId: 3 };
-      repository.findOne.mockResolvedValue(mockGiftEvent as GiftEvent);
-
-      await expect(service.update(1, templateUpdateDto)).rejects.toThrow(BadRequestException);
     });
   });
 
