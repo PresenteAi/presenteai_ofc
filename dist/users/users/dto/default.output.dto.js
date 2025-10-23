@@ -15,23 +15,77 @@ class UserOutputDto {
     id;
     name;
     email;
+    isActive;
+    isIndicated;
+    indicatedById;
     createdAt;
+    updatedAt;
+    lastLoginAt;
 }
 exports.UserOutputDto = UserOutputDto;
 __decorate([
-    (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", String)
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: 'Unique identifier of the user'
+    }),
+    __metadata("design:type", Number)
 ], UserOutputDto.prototype, "id", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'João Silva',
+        description: 'Full name of the user'
+    }),
     __metadata("design:type", String)
 ], UserOutputDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({
+        example: 'joao@email.com',
+        description: 'Email address of the user'
+    }),
     __metadata("design:type", String)
 ], UserOutputDto.prototype, "email", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({
+        example: true,
+        description: 'Indicates if the user is active'
+    }),
+    __metadata("design:type", Boolean)
+], UserOutputDto.prototype, "isActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: false,
+        description: 'Indicates if the user was indicated by another user'
+    }),
+    __metadata("design:type", Boolean)
+], UserOutputDto.prototype, "isIndicated", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 1,
+        description: 'ID of the user who indicated this user',
+        required: false
+    }),
+    __metadata("design:type", Number)
+], UserOutputDto.prototype, "indicatedById", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '2025-10-06T12:00:00Z',
+        description: 'Date when the user was created'
+    }),
     __metadata("design:type", Date)
 ], UserOutputDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '2025-10-06T12:00:00Z',
+        description: 'Date when the user was last updated'
+    }),
+    __metadata("design:type", Date)
+], UserOutputDto.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '2025-10-06T12:00:00Z',
+        description: 'Date of the last login',
+        required: false
+    }),
+    __metadata("design:type", Date)
+], UserOutputDto.prototype, "lastLoginAt", void 0);
 //# sourceMappingURL=default.output.dto.js.map

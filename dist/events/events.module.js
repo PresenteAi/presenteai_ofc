@@ -8,15 +8,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventsModule = void 0;
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
 const events_controller_1 = require("./events/events.controller");
 const events_service_1 = require("./events/events.service");
+const events_repository_1 = require("./events/events.repository");
+const event_entity_1 = require("./events/entities/event.entity");
+const users_module_1 = require("../users/users.module");
 let EventsModule = class EventsModule {
 };
 exports.EventsModule = EventsModule;
 exports.EventsModule = EventsModule = __decorate([
     (0, common_1.Module)({
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([event_entity_1.Event]),
+            users_module_1.UsersModule
+        ],
         controllers: [events_controller_1.EventsController],
-        providers: [events_service_1.EventsService]
+        providers: [events_service_1.EventsService, events_repository_1.EventsRepository],
+        exports: [events_service_1.EventsService, events_repository_1.EventsRepository],
     })
 ], EventsModule);
 //# sourceMappingURL=events.module.js.map

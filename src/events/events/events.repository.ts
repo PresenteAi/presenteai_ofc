@@ -1,0 +1,389 @@
+import { Injectable, ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Repository, ILike, FindManyOptions } from 'typeorm';
+import { Event, EventType } from './entities/event.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EventPaginationDto } from './dto/event-pagination.dto';
+
+@Injectable()
+export class EventsRepository {
+    constructor(
+        @InjectRepository(Event)
+        private readonly repository: Repository<Event>,
+    ) { }
+
+    /**
+     * Cria um novo evento após verificar se a URL pública não existe
+     */
+    async create(eventData: Partial<Event>): Promise<Event> {
+        try {
+            // Verificar se a URL pública já existe
+            const existingEvent = await this.repository.findOne({ 
+                where: { publicUrl: eventData.publicUrl } 
+            });
+
+            if (existingEvent) {
+                throw new ConflictException('Public URL already exists');
+            }
+
+            const entity = this.repository.create(eventData);
+            return await this.repository.save(entity);
+        } catch (error) {
+            if (error instanceof ConflictException) {
+                throw error;
+            }
+            throw new BadRequestException('Failed to create event');
+        }
+    }
+
+    /**
+     * Busca todos os eventos com paginação e filtros
+     */
+    async findAll(paginationDto: EventPaginationDto): Promise<{ events: Event[]; total: number }> {
+        const { 
+            page = 1, 
+            limit = 10, 
+            sortBy = 'createdAt', 
+            sortOrder = 'DESC', 
+            search,
+            eventType,
+            userId,
+            isPublished,
+            isActive
+        } = paginationDto;
+        
+        // Validação de parâmetros
+        const validSortFields = ['title', 'eventType', 'startDate', 'createdAt', 'updatedAt'];
+        const sortField = validSortFields.includes(sortBy) ? sortBy : 'createdAt';
+        const order = sortOrder === 'ASC' ? 'ASC' : 'DESC';
+        
+        const where: any = {};
+        
+        // Só adiciona filtro isActive se foi especificado
+        if (isActive !== undefined && isActive !== null) {
+            // Garantir conversão correta para boolean
+            let activeValue: boolean;
+            if (typeof isActive === 'string') {
+                activeValue = (isActive as string).toLowerCase() === 'true';
+            } else {
+                activeValue = Boolean(isActive);
+            }
+            
+            console.log('isActive conversion:', {
+                original: isActive,
+                originalType: typeof isActive,
+                converted: activeValue,
+                convertedType: typeof activeValue
+            });
+            
+            where.isActive = activeValue;
+        }
+        
+        console.log('Repository - Initial params with types:');
+        console.log('- page:', page, typeof page);
+        console.log('- limit:', limit, typeof limit);
+        console.log('- sortBy:', sortBy, typeof sortBy);
+        console.log('- sortOrder:', sortOrder, typeof sortOrder);
+        console.log('- search:', search, typeof search);
+        console.log('- eventType:', eventType, typeof eventType);
+        console.log('- userId:', userId, typeof userId);
+        console.log('- isPublished:', isPublished, typeof isPublished);
+        console.log('- isActive:', isActive, typeof isActive);
+        
+        // Filtros
+        if (search) {
+            where.title = ILike(`%${search}%`);
+        }
+
+        if (eventType && Object.values(EventType).includes(eventType)) {
+            where.eventType = eventType;
+        }
+
+        if (userId) {
+            where.userId = userId;
+        }
+
+        if (isPublished !== undefined && isPublished !== null) {
+            // Garantir conversão correta para boolean
+            let publishedValue: boolean;
+            if (typeof isPublished === 'string') {
+                publishedValue = (isPublished as string).toLowerCase() === 'true';
+            } else {
+                publishedValue = Boolean(isPublished);
+            }
+            
+            console.log('isPublished conversion:', {
+                original: isPublished,
+                originalType: typeof isPublished,
+                converted: publishedValue,
+                convertedType: typeof publishedValue
+            });
+            
+            where.isPublished = publishedValue;
+        }
+        
+        console.log('Repository - Final WHERE clause:', JSON.stringify(where, null, 2));
+        
+        // Debug: Verificar se existe o evento ID 1 no banco sem filtros
+        const debugEvent = await this.repository.findOne({ where: { id: 1 } });
+        console.log('Debug - Event ID 1 exists in DB:', !!debugEvent);
+        if (debugEvent) {
+            console.log('Debug - Event ID 1 data:', {
+                id: debugEvent.id,
+                userId: debugEvent.userId,
+                isPublished: debugEvent.isPublished,
+                isActive: debugEvent.isActive,
+                title: debugEvent.title
+            });
+        }
+
+        const findOptions: FindManyOptions<Event> = {
+            where,
+            order: { [sortField]: order },
+            skip: (page - 1) * limit,
+            take: Math.min(limit, 100), // Limita a 100 itens por página
+            relations: ['user'],
+            select: {
+                id: true,
+                userId: true,
+                title: true,
+                description: true,
+                eventType: true,
+                coverImageUrl: true,
+                primaryColor: true,
+                secondaryColor: true,
+                tertiaryColor: true,
+                fontFamily: true,
+                startDate: true,
+                endDate: true,
+                publicUrl: true,
+                isPublished: true,
+                isActive: true,
+                createdAt: true,
+                updatedAt: true,
+                user: {
+                    id: true,
+                    name: true,
+                    email: true
+                }
+            }
+        };
+
+        console.log('Repository - Final findOptions:', JSON.stringify(findOptions, null, 2));
+        
+        const [events, total] = await this.repository.findAndCount(findOptions);
+        
+        console.log('Repository - SQL Result:');
+        console.log('- Events found:', events.length);
+        console.log('- Total count:', total);
+        console.log('- Sample events (first 3):');
+        events.slice(0, 3).forEach((event, index) => {
+            console.log(`  Event ${index + 1}:`, {
+                id: event.id,
+                title: event.title,
+                userId: event.userId,
+                isPublished: event.isPublished,
+                isActive: event.isActive
+            });
+        });
+        
+        return { events, total };
+    }
+
+    /**
+     * Busca evento por ID (apenas ativos)
+     */
+    async findById(id: number): Promise<Event> {
+        if (!id || typeof id !== 'number' || id <= 0) {
+            throw new BadRequestException('Invalid event ID');
+        }
+
+        const event = await this.repository.findOne({
+            where: { id, isActive: true },
+            relations: ['user'],
+            select: {
+                id: true,
+                userId: true,
+                title: true,
+                description: true,
+                eventType: true,
+                coverImageUrl: true,
+                primaryColor: true,
+                secondaryColor: true,
+                tertiaryColor: true,
+                fontFamily: true,
+                startDate: true,
+                endDate: true,
+                publicUrl: true,
+                isPublished: true,
+                isActive: true,
+                createdAt: true,
+                updatedAt: true,
+                user: {
+                    id: true,
+                    name: true,
+                    email: true
+                }
+            }
+        });
+
+        if (!event) {
+            throw new NotFoundException(`Event with id ${id} not found`);
+        }
+        return event;
+    }
+
+    /**
+     * Busca evento por URL pública
+     */
+    async findByPublicUrl(publicUrl: string): Promise<Event | null> {
+        if (!publicUrl || typeof publicUrl !== 'string') {
+            return null;
+        }
+
+        return await this.repository.findOne({ 
+            where: { publicUrl: publicUrl.toLowerCase().trim(), isActive: true, isPublished: true },
+            relations: ['user'],
+            select: {
+                id: true,
+                userId: true,
+                title: true,
+                description: true,
+                eventType: true,
+                coverImageUrl: true,
+                primaryColor: true,
+                secondaryColor: true,
+                tertiaryColor: true,
+                fontFamily: true,
+                startDate: true,
+                endDate: true,
+                publicUrl: true,
+                isPublished: true,
+                isActive: true,
+                createdAt: true,
+                updatedAt: true,
+                user: {
+                    id: true,
+                    name: true,
+                    email: true
+                }
+            }
+        });
+    }
+
+    /**
+     * Busca eventos por usuário
+     */
+    async findByUserId(userId: number): Promise<Event[]> {
+        if (!userId || typeof userId !== 'number' || userId <= 0) {
+            return [];
+        }
+
+        return await this.repository.find({
+            where: { userId, isActive: true },
+            order: { createdAt: 'DESC' },
+            relations: ['user'],
+            select: {
+                id: true,
+                userId: true,
+                title: true,
+                description: true,
+                eventType: true,
+                coverImageUrl: true,
+                primaryColor: true,
+                secondaryColor: true,
+                tertiaryColor: true,
+                fontFamily: true,
+                startDate: true,
+                endDate: true,
+                publicUrl: true,
+                isPublished: true,
+                isActive: true,
+                createdAt: true,
+                updatedAt: true,
+                user: {
+                    id: true,
+                    name: true,
+                    email: true
+                }
+            }
+        });
+    }
+
+    /**
+     * Atualiza um evento
+     */
+    async update(id: number, updateData: Partial<Event>): Promise<Event> {
+        if (!id || typeof id !== 'number' || id <= 0) {
+            throw new BadRequestException('Invalid event ID');
+        }
+
+        // Verificar se o evento existe
+        const existingEvent = await this.findById(id);
+        
+        // Se está atualizando URL pública, verificar se não existe outro evento com esta URL
+        if (updateData.publicUrl && updateData.publicUrl !== existingEvent.publicUrl) {
+            const urlExists = await this.repository.findOne({
+                where: { publicUrl: updateData.publicUrl.toLowerCase().trim() }
+            });
+            
+            if (urlExists && urlExists.id !== id) {
+                throw new ConflictException('Public URL already exists');
+            }
+
+            updateData.publicUrl = updateData.publicUrl.toLowerCase().trim();
+        }
+
+        // Atualizar updatedAt
+        updateData.updatedAt = new Date();
+
+        try {
+            await this.repository.update(id, updateData);
+            return await this.findById(id);
+        } catch (error) {
+            throw new BadRequestException('Failed to update event');
+        }
+    }
+
+    /**
+     * Soft delete - desativa o evento ao invés de deletar
+     */
+    async softDelete(id: number): Promise<void> {
+        if (!id || typeof id !== 'number' || id <= 0) {
+            throw new BadRequestException('Invalid event ID');
+        }
+
+        const event = await this.findById(id);
+
+        await this.repository.update(id, {
+            isPublished: false,
+            updatedAt: new Date()
+        });
+    }
+
+    /**
+     * Conta eventos por usuário
+     */
+    async countByUserId(userId: number): Promise<number> {
+        if (!userId || typeof userId !== 'number' || userId <= 0) {
+            return 0;
+        }
+
+        return await this.repository.count({
+            where: { userId, isActive: true }
+        });
+    }
+
+    /**
+     * Verifica se um evento existe pelo ID
+     */
+    async exists(id: number): Promise<boolean> {
+        if (!id || typeof id !== 'number' || id <= 0) {
+            return false;
+        }
+
+        const count = await this.repository.count({ 
+            where: { id, isActive: true } 
+        });
+        return count > 0;
+    }
+}

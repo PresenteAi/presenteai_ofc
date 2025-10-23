@@ -1,0 +1,12 @@
+{
+  "displayName": "Gift Templates E2E Tests",
+  "testMatch": [
+    "**/gift-templates/**/*.e2e.spec.ts"
+  ],
+  "testEnvironment": "node",
+  "setupFilesAfterEnv": ["<rootDir>/test/setup-e2e.ts"],
+  "testTimeout": 15000,
+  "maxWorkers": 1,
+  "detectOpenHandles": true,
+  "forceExit": true
+}

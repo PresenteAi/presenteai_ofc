@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ContributionsController } from './contributions/contributions.controller';
-import { ContributionsService } from './contributions/contributions.service';
+import { ContributionsController } from './controllers/contributions.controller';
+import { ContributionsService } from './services/contributions.service';
 
 @Module({
   controllers: [ContributionsController],
